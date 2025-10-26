@@ -1,36 +1,51 @@
-
-body {
+/* FONTS, RESET */
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     font-family: Arial, sans-serif;
 }
-nav {
-    background-color: #333;
-    padding: 10px;
-    display: flex;
-    gap: 20px;
+
+/* BACKGROUND IMAGE */
+body {
+    background-image: url("mainpage.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Paliek ritinot */
+    background-position: center;
+    color: black;
 }
-nav a {
-    color: white;
+
+/* NAVIGATION BAR */
+.navbar {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    background: rgba(0, 0, 0, 0.65); /* Melns, daļēji caurspīdīgs */
+    padding: 15px 0;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.navbar a {
     text-decoration: none;
+    color: black; /* Melni burti */
+    font-size: 18px;
     font-weight: bold;
 }
-nav a:hover { text-decoration: underline; }
-#map {
-    width: 100%;
-    height: 90vh;
+
+/* Īpaši KARTE poga */
+.navbar a.karte {
+    color: rgb(0, 255, 0); /* Zaļš teksts */
 }
-.route-list {
-    width: 25%;
-    background: rgba(0,0,0,0.2);
-    color: white;
-    float: left;
-    padding: 10px;
+
+/* CONTENT */
+.content {
+    padding-top: 120px; /* lai nesaplūst ar izvēlni */
+    text-align: center;
 }
-.map-container {
-    width: 75%;
-    height: 90vh;
-    float: left;
-}
-.route-item { padding: 5px; margin:5px 0; cursor:pointer; }
-.route-item.active { background: #3f87a6; }
-.clearfix::after { content: ""; clear: both; display: table; }
