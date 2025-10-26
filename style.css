@@ -1,51 +1,43 @@
-/* FONTS, RESET */
-* {
+/* Resetē noklusējuma stilu */
+body {
     margin: 0;
-    padding: 0;
-    box-sizing: border-box;
     font-family: Arial, sans-serif;
 }
 
-/* BACKGROUND IMAGE */
-body {
-    background-image: url("mainpage.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed; /* Paliek ritinot */
-    background-position: center;
-    color: black;
+/* Izvēlnes konteiners */
+.menu {
+    display: flex;           /* Horizontāla izvietošana */
+    gap: 20px;               /* Atstarpes starp opcijām */
+    list-style: none;        /* Noņem bumbiņas */
+    padding: 10px 20px;      /* Iekšējā atstarpe */
+    margin: 0;
+    background-color: #333;  /* Fona krāsa izvēlnei */
 }
 
-/* NAVIGATION BAR */
-.navbar {
-    width: 100%;
-    position: fixed;
-    top: 0;
-    background: rgba(0, 0, 0, 0.65); /* Melns, daļēji caurspīdīgs */
-    padding: 15px 0;
+/* Izvēlnes elementi */
+.menu li a {
+    color: white;            /* Teksta krāsa */
+    text-decoration: none;   /* Noņem pasvītrojumu */
+    padding: 8px 12px;       /* Klikšķa zona */
+    display: block;          /* Ļauj padding strādāt */
+    transition: background 0.3s;
 }
 
-.navbar ul {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    gap: 40px;
+/* Hover efekts */
+.menu li a:hover {
+    background-color: #555;
+    border-radius: 4px;
 }
 
-.navbar a {
-    text-decoration: none;
-    color: black; /* Melni burti */
-    font-size: 18px;
-    font-weight: bold;
-}
-
-/* Īpaši KARTE poga */
-.navbar a.karte {
-    color: rgb(0, 255, 0); /* Zaļš teksts */
-}
-
-/* CONTENT */
+/* Satura stils */
 .content {
-    padding-top: 120px; /* lai nesaplūst ar izvēlni */
-    text-align: center;
+    padding: 20px;
+}
+
+/* Mobilajām ierīcēm */
+@media (max-width: 600px) {
+    .menu {
+        flex-direction: column; /* Vertikāli mobilajā */
+        gap: 10px;
+    }
 }
