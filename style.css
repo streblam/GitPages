@@ -17,7 +17,7 @@ body, html {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Caurspīdīga melna josla */
+    background: rgba(0, 0, 0, 0.5);
     padding: 15px 0;
     z-index: 100;
 }

@@ -10,9 +10,10 @@ body, html {
     top: 0;
     right: 0;
     bottom: 0;
-    left: 250px; /* vieta izvēlnei */
+    left: 250px;
 }
 
+/* Sānjosla */
 #sidebar {
     position: absolute;
     top: 0;
@@ -23,6 +24,9 @@ body, html {
     color: white;
     padding: 20px;
     overflow-y: auto;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 #sidebar h2 {
@@ -43,10 +47,47 @@ body, html {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 5px;
     cursor: pointer;
+    text-align: center;
+    font-weight: 500;
     transition: background 0.3s, transform 0.2s;
 }
 
 #routeList li:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: scale(1.03);
+}
+
+#routeList li.active {
+    background: rgba(255, 255, 255, 0.4);
+    color: black;
+}
+
+/* Atpakaļ poga */
+.back-btn {
+    display: block;
+    margin-top: 20px;
+    background: #fff;
+    color: #000;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+}
+
+.back-btn:hover {
+    background: #ddd;
+}
+
+/* Mobilā versija */
+@media (max-width: 600px) {
+    #map {
+        left: 0;
+    }
+    #sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-radius: 0;
+    }
 }
