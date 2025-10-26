@@ -1,0 +1,52 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 250px; /* vieta izvēlnei */
+}
+
+#sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 250px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+#sidebar h2 {
+    margin-top: 0;
+    font-size: 1.2em;
+    text-align: center;
+}
+
+#routeList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#routeList li {
+    padding: 10px;
+    margin: 5px 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+#routeList li:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.03);
+}

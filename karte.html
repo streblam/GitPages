@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Karte</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet">
+    <link rel="stylesheet" href="map.css">
+</head>
+<body>
+<div id="sidebar">
+    <h2>Maršruti</h2>
+    <ul id="routeList">
+        <li data-routes="guldupe">Guldupe</li>
+        <li data-routes="tilts">Tilts</li>
+        <li data-routes="baze">Bāze</li>
+        <li data-routes="guldupe,tilts">Guldupe + Tilts</li>
+        <li data-routes="guldupe,baze">Guldupe + Bāze</li>
+        <li data-routes="tilts,baze">Tilts + Bāze</li>
+        <li data-routes="guldupe,tilts,baze">Visi kopā</li>
+    </ul>
+</div>
+
+<div id="map"></div>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
+<script src="routes.js"></script>
+<script src="map.js"></script>
+</body>
+</html>
