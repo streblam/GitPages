@@ -1,43 +1,50 @@
-/* Resetē noklusējuma stilu */
-body {
+/* Fons pa visu ekrānu */
+body, html {
     margin: 0;
+    padding: 0;
+    height: 100%;
     font-family: Arial, sans-serif;
 }
 
-/* Izvēlnes konteiners */
-.menu {
-    display: flex;           /* Horizontāla izvietošana */
-    gap: 20px;               /* Atstarpes starp opcijām */
-    list-style: none;        /* Noņem bumbiņas */
-    padding: 10px 20px;      /* Iekšējā atstarpe */
+.hero {
+    background: url('mainpage.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+}
+
+/* Navigācijas josla */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Caurspīdīga melna josla */
+    padding: 15px 0;
+    z-index: 100;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
     margin: 0;
-    background-color: #333;  /* Fona krāsa izvēlnei */
+    padding: 0;
 }
 
-/* Izvēlnes elementi */
-.menu li a {
-    color: white;            /* Teksta krāsa */
-    text-decoration: none;   /* Noņem pasvītrojumu */
-    padding: 8px 12px;       /* Klikšķa zona */
-    display: block;          /* Ļauj padding strādāt */
-    transition: background 0.3s;
+.navbar li {
+    margin: 0 20px;
 }
 
-/* Hover efekts */
-.menu li a:hover {
-    background-color: #555;
-    border-radius: 4px;
+.navbar a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    transition: color 0.3s ease;
 }
 
-/* Satura stils */
-.content {
-    padding: 20px;
+.navbar a:hover {
+    color: white;
 }
 
-/* Mobilajām ierīcēm */
-@media (max-width: 600px) {
-    .menu {
-        flex-direction: column; /* Vertikāli mobilajā */
-        gap: 10px;
-    }
+.karte-link {
+    color: limegreen;
 }
