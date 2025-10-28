@@ -3,8 +3,8 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibGFic3NsaWt0YWlzIiwiYSI6ImNtaDN1emw1bDFqajQya
 const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/outdoors-v12',
-    center: [27.05, 57.21],
-    zoom: 11
+    center: [27.10, 57.31],
+    zoom: 9
 });
 
 map.on('load', () => {
