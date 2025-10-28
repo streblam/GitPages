@@ -73,7 +73,7 @@ map.on('load', () => {
                     coords.forEach(c => bounds.extend(c));
                 });
 
-                map.fitBounds(bounds, { padding: 80, duration: 1000 });
+                map.fitBounds(bounds, { padding: 80, duration: 1500 });
             }
         });
 
@@ -94,10 +94,10 @@ map.on('load', () => {
                         .flatMap(f => (f.geometry.type === 'LineString' ? f.geometry.coordinates : [f.geometry.coordinates]));
                     coords.forEach(c => bounds.extend(c));
                 });
-                map.fitBounds(bounds, { padding: 80, duration: 1000 });
+                map.fitBounds(bounds, { padding: 80, duration: 1500 });
             } else {
                 // Ja nav neviena aktīva — atgriežas sākumā
-                map.fitBounds(initialBounds, { padding: 80, duration: 1000 });
+                map.fitBounds(initialBounds, { padding: 80, duration: 1500 });
             }
         });
 
@@ -122,7 +122,7 @@ map.on('load', () => {
             });
 
             // Pietuvina aktīvajam
-            map.fitBounds(bounds, { padding: 80, duration: 1000 });
+            map.fitBounds(bounds, { padding: 80, duration: 1500 });
         });
     });
 });
