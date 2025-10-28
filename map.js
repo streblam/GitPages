@@ -49,59 +49,43 @@ map.on('load', () => {
 
     // --- Izvēlnes loģika ---
     const listItems = document.querySelectorAll('#routeList li');
-    let activeRoutes = []; // aktīvie (klikšķinātie) maršruti
+    let activeRoutes = []; // pašlaik klikšķinātie maršruti
+    let lastViewBounds = initialBounds; // lai atceras pēdējo kartes skatījumu
 
     listItems.forEach(li => {
         const routeNames = li.getAttribute('data-routes').split(',');
 
         // --- Hover efekts ---
         li.addEventListener('mouseenter', () => {
-            // ja šis nav aktīvs vienums, parāda pagaidu efektu
-            if (!li.classList.contains('active')) {
-                routeNames.forEach(name => {
-                    map.setLayoutProperty(name + '-line', 'visibility', 'visible');
-                    map.setLayoutProperty(name + '-points', 'visibility', 'visible');
-                    map.setPaintProperty(name + '-line', 'line-color', '#ff0000');
-                });
+            // iekrāso hover maršrutu
+            routeNames.forEach(name => {
+                map.setLayoutProperty(name + '-line', 'visibility', 'visible');
+                map.setLayoutProperty(name + '-points', 'visibility', 'visible');
+                map.setPaintProperty(name + '-line', 'line-color', '#ff0000');
+            });
 
-                // Aprēķina robežas un pietuvina
-                const bounds = new mapboxgl.LngLatBounds();
-                routeNames.forEach(name => {
-                    const coords = routes[name].features
-                        .flatMap(f => (f.geometry.type === 'LineString' ? f.geometry.coordinates : [f.geometry.coordinates]));
-                    coords.forEach(c => bounds.extend(c));
-                });
-                map.fitBounds(bounds, { padding: 80, duration: 600 });
-            }
+            // Pietuvina hover maršrutam
+            const bounds = new mapboxgl.LngLatBounds();
+            routeNames.forEach(name => {
+                const coords = routes[name].features
+                    .flatMap(f => (f.geometry.type === 'LineString' ? f.geometry.coordinates : [f.geometry.coordinates]));
+                coords.forEach(c => bounds.extend(c));
+            });
+            lastViewBounds = map.getBounds(); // saglabā pirms-zoom skatījumu
+            map.fitBounds(bounds, { padding: 80, duration: 600 });
         });
 
-        // --- Kad pele tiek noņemta ---
+        // --- Kad noņem kursoru ---
         li.addEventListener('mouseleave', () => {
-            // tikai ja šis nav aktīvais vienums
-            if (!li.classList.contains('active')) {
-                routeNames.forEach(name => {
-                    // tikai noņem hover efektu, bet neatceļ aktīvos
-                    if (!activeRoutes.includes(name)) {
-                        map.setPaintProperty(name + '-line', 'line-color', '#888');
-                        map.setLayoutProperty(name + '-line', 'visibility', 'none');
-                        map.setLayoutProperty(name + '-points', 'visibility', 'none');
-                    }
-                });
-
-                // ja ir aktīvi maršruti — atgriež skatījumu uz tiem,
-                // ja nav — atgriežas sākuma skatā
-                if (activeRoutes.length > 0) {
-                    const bounds = new mapboxgl.LngLatBounds();
-                    activeRoutes.forEach(name => {
-                        const coords = routes[name].features
-                            .flatMap(f => (f.geometry.type === 'LineString' ? f.geometry.coordinates : [f.geometry.coordinates]));
-                        coords.forEach(c => bounds.extend(c));
-                    });
-                    map.fitBounds(bounds, { padding: 80, duration: 600 });
-                } else {
-                    map.fitBounds(initialBounds, { padding: 80, duration: 600 });
+            // ja šis maršruts nav aktīvais, atgriež krāsu
+            routeNames.forEach(name => {
+                if (!activeRoutes.includes(name)) {
+                    map.setPaintProperty(name + '-line', 'line-color', '#888');
                 }
-            }
+            });
+
+            // Atgriež karti iepriekšējā skatā (nepaslēpj neko)
+            map.fitBounds(lastViewBounds, { padding: 80, duration: 600 });
         });
 
         // --- Klikšķis uz izvēlnes ---
@@ -110,14 +94,12 @@ map.on('load', () => {
             li.classList.add('active');
             activeRoutes = routeNames;
 
-            // Paslēpj visus
+            // Visus pārējos pelēkus
             Object.keys(routes).forEach(routeName => {
-                map.setLayoutProperty(routeName + '-line', 'visibility', 'none');
-                map.setLayoutProperty(routeName + '-points', 'visibility', 'none');
                 map.setPaintProperty(routeName + '-line', 'line-color', '#888');
             });
 
-            // Parāda aktīvos maršrutus
+            // Aktīvos — sarkanus un redzamus
             const bounds = new mapboxgl.LngLatBounds();
             routeNames.forEach(name => {
                 map.setLayoutProperty(name + '-line', 'visibility', 'visible');
@@ -129,6 +111,7 @@ map.on('load', () => {
                 coords.forEach(c => bounds.extend(c));
             });
 
+            lastViewBounds = bounds;
             map.fitBounds(bounds, { padding: 80, duration: 800 });
         });
     });
