@@ -10,18 +10,7 @@ const map = new mapboxgl.Map({
 map.on('load', () => {
     const routes = window._ROUTES_GEOJSON;
 
-    // --- Sākotnējās robežas ---
-    const initialBounds = new mapboxgl.LngLatBounds();
-    Object.values(routes).forEach(geojson => {
-        geojson.features.forEach(f => {
-            const coords = f.geometry.type === 'LineString'
-                ? f.geometry.coordinates
-                : [f.geometry.coordinates];
-            coords.forEach(c => initialBounds.extend(c));
-        });
-    });
-
-    // --- Pievieno visus maršrutus ---
+    // --- Pievieno visus maršrutus vienlaicīgi ---
     for (const [name, geojson] of Object.entries(routes)) {
         map.addSource(name, { type: 'geojson', data: geojson });
 
@@ -49,69 +38,65 @@ map.on('load', () => {
 
     // --- Izvēlnes loģika ---
     const listItems = document.querySelectorAll('#routeList li');
-    let activeRoutes = []; // pašlaik klikšķinātie maršruti
-    let lastViewBounds = initialBounds; // lai atceras pēdējo kartes skatījumu
+    let activeRoutes = []; // pašlaik izvēlētie maršruti
+    let lastViewBounds = new mapboxgl.LngLatBounds();
 
     listItems.forEach(li => {
         const routeNames = li.getAttribute('data-routes').split(',');
 
         // --- Hover efekts ---
         li.addEventListener('mouseenter', () => {
-            // iekrāso hover maršrutu
             routeNames.forEach(name => {
-                map.setLayoutProperty(name + '-line', 'visibility', 'visible');
-                map.setLayoutProperty(name + '-points', 'visibility', 'visible');
                 map.setPaintProperty(name + '-line', 'line-color', '#ff0000');
             });
 
-            // Pietuvina hover maršrutam
+            // Zoom tikai uz hoverētajiem
             const bounds = new mapboxgl.LngLatBounds();
             routeNames.forEach(name => {
                 const coords = routes[name].features
                     .flatMap(f => (f.geometry.type === 'LineString' ? f.geometry.coordinates : [f.geometry.coordinates]));
                 coords.forEach(c => bounds.extend(c));
             });
-            lastViewBounds = map.getBounds(); // saglabā pirms-zoom skatījumu
+            lastViewBounds = map.getBounds(); // saglabā iepriekšējo skatījumu
             map.fitBounds(bounds, { padding: 80, duration: 600 });
         });
 
-        // --- Kad noņem kursoru ---
+        // --- Noņem kursoru ---
         li.addEventListener('mouseleave', () => {
-            // ja šis maršruts nav aktīvais, atgriež krāsu
+            // tikai ja nav aktīvs — atgriež pelēku
             routeNames.forEach(name => {
                 if (!activeRoutes.includes(name)) {
                     map.setPaintProperty(name + '-line', 'line-color', '#888');
                 }
             });
-
-            // Atgriež karti iepriekšējā skatā (nepaslēpj neko)
+            // atgriež skatījumu
             map.fitBounds(lastViewBounds, { padding: 80, duration: 600 });
         });
 
-        // --- Klikšķis uz izvēlnes ---
+        // --- Klikšķis (fiksē maršrutu) ---
         li.addEventListener('click', () => {
+            // notīra aktīvos maršrutus
             listItems.forEach(x => x.classList.remove('active'));
             li.classList.add('active');
             activeRoutes = routeNames;
 
-            // Visus pārējos pelēkus
-            Object.keys(routes).forEach(routeName => {
-                map.setPaintProperty(routeName + '-line', 'line-color', '#888');
+            // visi pelēki
+            Object.keys(routes).forEach(name => {
+                map.setPaintProperty(name + '-line', 'line-color', '#888');
             });
 
-            // Aktīvos — sarkanus un redzamus
+            // izvēlētie sarkani
+            routeNames.forEach(name => {
+                map.setPaintProperty(name + '-line', 'line-color', '#ff0000');
+            });
+
+            // pietuvina izvēlētajiem
             const bounds = new mapboxgl.LngLatBounds();
             routeNames.forEach(name => {
-                map.setLayoutProperty(name + '-line', 'visibility', 'visible');
-                map.setLayoutProperty(name + '-points', 'visibility', 'visible');
-                map.setPaintProperty(name + '-line', 'line-color', '#ff0000');
-
                 const coords = routes[name].features
                     .flatMap(f => (f.geometry.type === 'LineString' ? f.geometry.coordinates : [f.geometry.coordinates]));
                 coords.forEach(c => bounds.extend(c));
             });
-
-            lastViewBounds = bounds;
             map.fitBounds(bounds, { padding: 80, duration: 800 });
         });
     });
