@@ -19,9 +19,9 @@ body, html {
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: left;
+  text-align: center;
   position: relative;
-  padding: 90px 18px 28px;
+  padding: 90px 16px 40px;
 }
 
 .hero::before {
@@ -34,18 +34,18 @@ body, html {
 .hero-content {
   position: relative;
   z-index: 1;
-  width: min(980px, 100%);
+  max-width: 1000px;
+  width: 100%;
 }
 
 .hero-content h1 {
   margin: 0 0 6px;
-  font-size: 2.2rem;
-  font-weight: 800;
+  font-size: 2.4rem;
 }
 
 .hero-content p {
   margin: 0 0 18px;
-  opacity: 0.92;
+  opacity: 0.9;
 }
 
 /* ==============================
@@ -72,6 +72,8 @@ body, html {
   gap: 40px;
 }
 
+.navbar li { position: relative; }
+
 .navbar a {
   text-decoration: none;
   color: #f0f0f0;
@@ -97,224 +99,235 @@ body, html {
    Kalendāra kartīte
 ============================== */
 .calendar-card {
-  margin-top: 10px;
-  background: rgba(15, 15, 15, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  margin: 0 auto;
+  width: min(920px, 100%);
+  background: rgba(15, 15, 15, 0.55);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 18px;
   padding: 16px;
-  box-shadow: 0 18px 55px rgba(0,0,0,0.35);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.35);
 }
 
-.calendar-header {
+.calendar-head {
   display: grid;
   grid-template-columns: 44px 1fr 44px;
   align-items: center;
   gap: 10px;
-  margin-bottom: 12px;
-}
-
-.cal-title {
-  font-size: 1.2rem;
-  font-weight: 800;
-}
-
-.cal-subtitle {
-  font-size: 0.9rem;
-  opacity: 0.85;
+  margin-bottom: 10px;
 }
 
 .cal-btn {
   height: 40px;
   width: 44px;
-  border: 0;
   border-radius: 12px;
-  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.08);
   color: #fff;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.2s ease;
+  transition: transform 0.15s ease, background 0.15s ease;
 }
-.cal-btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.16); }
-.cal-btn:active { transform: translateY(0px) scale(0.98); }
+.cal-btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.12); }
 
-.calendar-legend {
+.cal-title {
   display: flex;
-  gap: 16px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 10px;
+}
+
+.cal-month {
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  font-size: 1.1rem;
+}
+
+.cal-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
   opacity: 0.95;
+  font-size: 0.92rem;
+}
+
+.legend-item { display: inline-flex; align-items: center; gap: 8px; }
+.dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+.dot-a { background: #ff4d4d; }
+.dot-b { background: #2dd4bf; }
+.dot-c { background: #a78bfa; }
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  padding: 8px 4px 10px;
+  opacity: 0.9;
+  font-weight: 700;
   font-size: 0.9rem;
 }
-.legend-item { display: inline-flex; align-items: center; gap: 8px; }
 
-/* krāsu “dot” */
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  display: inline-block;
-  box-shadow: 0 0 10px rgba(0,0,0,0.35);
-}
-.dot-a { background: #ff4d4d; }
-.dot-b { background: #32cd32; }
-.dot-c { background: #4da3ff; }
-
-/* ==============================
-   Kalendāra režģis
-============================== */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 10px;
 }
 
-.weekday {
-  font-size: 0.85rem;
-  opacity: 0.85;
-  padding: 4px 6px;
-  text-align: center;
-}
-
 .day {
   position: relative;
-  min-height: 74px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  padding: 10px 10px 8px;
+  min-height: 84px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
   overflow: hidden;
-  cursor: default;
-  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
 .day:hover {
   transform: translateY(-2px);
-  background: rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.09);
   border-color: rgba(255,255,255,0.18);
 }
 
-.day.muted {
-  opacity: 0.35;
+.day.is-muted {
+  opacity: 0.45;
+  cursor: default;
 }
 
-.day-number {
-  font-weight: 800;
-  font-size: 1rem;
-}
-
-/* tie ir TIE “smukie aplīši” */
-.dots {
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: 10px;
+.day-top {
   display: flex;
-  gap: 8px;
   align-items: center;
+  justify-content: space-between;
+  padding: 10px 10px 0;
+  font-weight: 800;
 }
 
-.inv-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  transform: scale(var(--s, 0.35));
-  opacity: var(--o, 0.35);
-  transition: transform 0.25s ease, opacity 0.25s ease, filter 0.25s ease;
-  filter: saturate(1.1);
-}
+.day-num { font-size: 1rem; }
 
-/* krāsas */
-.inv-dot.a { background: #ff4d4d; }
-.inv-dot.b { background: #32cd32; }
-.inv-dot.c { background: #4da3ff; }
-
-/* hover - “dzīves” efekts */
-.day:hover .inv-dot {
-  transform: scale(calc(var(--s, 0.35) + 0.12));
-  opacity: min(1, calc(var(--o, 0.35) + 0.15));
-  filter: saturate(1.25);
+.rings-wrap {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
 }
 
 /* ==============================
-   Tooltip
+   3 koncentriskie progress ring
+   - ar conic-gradient + mask
 ============================== */
+
+/* Lai var animēt CSS custom prop */
+@property --p {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+.rings {
+  position: relative;
+  width: 46px;
+  height: 46px;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  --p: 0;        /* animējam no 0 -> uz target */
+  --c: #fff;
+  --t: 5px;      /* “līnijas” biezums */
+  background:
+    conic-gradient(var(--c) calc(var(--p) * 1%), rgba(255,255,255,0.14) 0);
+  -webkit-mask:
+    radial-gradient(farthest-side,
+      transparent calc(50% - var(--t)),
+      #000 calc(50% - var(--t) + 0.8px)
+    );
+  mask:
+    radial-gradient(farthest-side,
+      transparent calc(50% - var(--t)),
+      #000 calc(50% - var(--t) + 0.8px)
+    );
+  transition: --p 520ms cubic-bezier(.2,.9,.2,1);
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.30));
+}
+
+/* Outer / Mid / Inner izmēri */
+.ring.outer { inset: 0; --t: 5px; }
+.ring.mid   { inset: 7px; --t: 5px; }
+.ring.inner { inset: 14px; --t: 5px; }
+
+/* Krāsas */
+.ring.a { --c: #ff4d4d; }
+.ring.b { --c: #2dd4bf; }
+.ring.c { --c: #a78bfa; }
+
+/* Hover “pulse” */
+.day:hover .rings {
+  transform: scale(1.04);
+  transition: transform 160ms ease;
+}
+
+/* Tooltip */
 .tooltip {
-  position: fixed;
-  z-index: 2000;
-  pointer-events: none;
-  width: 240px;
-  padding: 12px 12px 10px;
-  border-radius: 14px;
-  background: rgba(12, 12, 12, 0.92);
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow: 0 18px 55px rgba(0,0,0,0.5);
-  backdrop-filter: blur(10px);
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  padding: 10px 10px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.14);
   opacity: 0;
-  transform: translateY(6px) scale(0.98);
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transform: translateY(6px);
+  transition: opacity 160ms ease, transform 160ms ease;
+  pointer-events: none;
+  font-size: 0.92rem;
+  text-align: left;
 }
 
-.tooltip.show {
+.day:hover .tooltip {
   opacity: 1;
-  transform: translateY(0px) scale(1);
+  transform: translateY(0);
 }
 
-.tip-date {
-  font-weight: 800;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
-}
-
-.tip-row {
-  display: grid;
-  grid-template-columns: 42px 1fr 40px;
+.tooltip b { font-weight: 800; }
+.tooltip .row {
+  display: flex;
+  justify-content: space-between;
   gap: 10px;
-  align-items: center;
-  margin: 8px 0;
+  margin-top: 4px;
+  opacity: 0.95;
 }
-
-.tip-label {
+.tooltip .label {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-weight: 700;
-  opacity: 0.95;
 }
-
-.tip-bar {
+.badge {
+  width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.10);
-  overflow: hidden;
-  position: relative;
 }
+.badge.a { background: #ff4d4d; }
+.badge.b { background: #2dd4bf; }
+.badge.c { background: #a78bfa; }
 
-.tip-fill {
-  display: block;
-  height: 100%;
-  width: 0%;
-  border-radius: 999px;
-  transform-origin: left center;
-  transition: width 0.35s ease;
+.cal-hint {
+  margin-top: 10px;
+  opacity: 0.85;
+  font-size: 0.92rem;
 }
-
-.fill-a { background: #ff4d4d; }
-.fill-b { background: #32cd32; }
-.fill-c { background: #4da3ff; }
-
-.tip-val {
-  text-align: right;
-  font-weight: 800;
-}
-
 
 /* ==============================
-   Responsīvs
+   Responsive
 ============================== */
 @media (max-width: 768px) {
-  .navbar ul { flex-direction: column; gap: 18px; }
+  .navbar ul { flex-direction: column; gap: 16px; }
   .hero-content h1 { font-size: 1.8rem; }
-  .calendar-grid { gap: 8px; }
-  .day { min-height: 68px; }
+  .calendar-weekdays, .calendar-grid { gap: 8px; }
+  .day { min-height: 74px; }
 }
