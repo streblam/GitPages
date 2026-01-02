@@ -15,13 +15,13 @@ body, html {
 .hero {
   background: url('mainpage.jpg') no-repeat center center fixed;
   background-size: cover;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  text-align: center;
+  text-align: left;
   position: relative;
-  padding-top: 110px; /* vieta navbar */
+  padding: 90px 18px 28px;
 }
 
 .hero::before {
@@ -29,6 +29,23 @@ body, html {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  width: min(980px, 100%);
+}
+
+.hero-content h1 {
+  margin: 0 0 6px;
+  font-size: 2.2rem;
+  font-weight: 800;
+}
+
+.hero-content p {
+  margin: 0 0 18px;
+  opacity: 0.92;
 }
 
 /* ==============================
@@ -55,8 +72,6 @@ body, html {
   gap: 40px;
 }
 
-.navbar li { position: relative; }
-
 .navbar a {
   text-decoration: none;
   color: #f0f0f0;
@@ -76,250 +91,229 @@ body, html {
   font-weight: 700;
   text-shadow: 0 0 6px rgba(50, 205, 50, 0.8);
 }
-
 .karte-link:hover { color: #7fff00; }
 
 /* ==============================
-   KALENDĀRS (prototips)
+   Kalendāra kartīte
 ============================== */
-.calendar-card{
-  position: relative;
-  z-index: 2; /* virs hero overlay */
-  width: min(980px, calc(100% - 24px));
-  margin: 0 auto;
-  background: rgba(14, 14, 16, 0.72);
-  border: 1px solid rgba(255,255,255,0.12);
+.calendar-card {
+  margin-top: 10px;
+  background: rgba(15, 15, 15, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 18px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  padding: 16px;
+  box-shadow: 0 18px 55px rgba(0,0,0,0.35);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 18px 18px 16px;
-  text-align: left;
 }
 
-.calendar-head{
-  display:flex;
-  align-items:flex-start;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.calendar-title{
-  margin: 0;
-  font-size: 1.25rem;
-  letter-spacing: 0.2px;
-}
-
-.calendar-subtitle{
-  margin: 6px 0 0;
-  opacity: 0.85;
-  font-size: 0.95rem;
-}
-
-.calendar-controls{
-  display:flex;
-  align-items:center;
+.calendar-header {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
   gap: 10px;
+  margin-bottom: 12px;
 }
 
-.cal-btn{
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.08);
-  color: #fff;
+.cal-title {
   font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.cal-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.cal-btn {
+  height: 40px;
+  width: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+  font-size: 1.6rem;
   cursor: pointer;
-  transition: transform .15s ease, background .2s ease;
+  transition: transform 0.15s ease, background 0.2s ease;
 }
-.cal-btn:hover{
-  background: rgba(255,255,255,0.14);
-  transform: translateY(-1px);
-}
+.cal-btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.16); }
+.cal-btn:active { transform: translateY(0px) scale(0.98); }
 
-.cal-month{
-  min-width: 160px;
-  text-align:center;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  opacity: 0.95;
-}
-
-.legend{
-  display:flex;
-  align-items:center;
-  gap: 10px;
-  margin-top: 14px;
-  opacity: 0.95;
+.calendar-legend {
+  display: flex;
+  gap: 16px;
   flex-wrap: wrap;
-}
-
-.dot{
-  display:inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 99px;
-  margin-right: 6px;
-}
-.dot.a{ background: #ff4d4d; }
-.dot.b{ background: #ffd24d; }
-.dot.c{ background: #44d07b; }
-
-.dow{
-  display:grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  margin-top: 14px;
-  padding: 0 2px;
-  opacity: 0.9;
-  font-weight: 600;
-}
-.dow > div{
-  text-align:center;
+  margin-bottom: 10px;
+  opacity: 0.95;
   font-size: 0.9rem;
 }
+.legend-item { display: inline-flex; align-items: center; gap: 8px; }
 
-.calendar-grid{
-  display:grid;
+/* krāsu “dot” */
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+  box-shadow: 0 0 10px rgba(0,0,0,0.35);
+}
+.dot-a { background: #ff4d4d; }
+.dot-b { background: #32cd32; }
+.dot-c { background: #4da3ff; }
+
+/* ==============================
+   Kalendāra režģis
+============================== */
+.calendar-grid {
+  display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 10px;
-  margin-top: 10px;
 }
 
-.day{
+.weekday {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.day {
   position: relative;
+  min-height: 74px;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.06);
-  min-height: 86px;
-  padding: 10px 10px 10px;
-  cursor: default;
-  transition: transform .15s ease, background .2s ease, border-color .2s ease;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 10px 10px 8px;
   overflow: hidden;
+  cursor: default;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
-.day:hover{
+.day:hover {
   transform: translateY(-2px);
-  background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.18);
 }
 
-.day.muted{
+.day.muted {
   opacity: 0.35;
 }
 
-.day-num{
+.day-number {
   font-weight: 800;
-  font-size: 0.95rem;
-  opacity: 0.95;
-  text-align: left;
+  font-size: 1rem;
 }
 
-/* 3 mini joslas dienas “preview” */
-.mini{
-  margin-top: 10px;
-  display:flex;
-  flex-direction: column;
-  gap: 7px;
+/* tie ir TIE “smukie aplīši” */
+.dots {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
-.mini-line{
-  height: 7px;
-  border-radius: 99px;
-  background: rgba(255,255,255,0.10);
-  overflow: hidden;
-}
-.mini-fill{
-  height:100%;
-  width: 0%;
-  border-radius: 99px;
-  transform-origin: left;
-  transition: width .35s ease;
-}
-.mini-fill.a{ background: #ff4d4d; }
-.mini-fill.b{ background: #ffd24d; }
-.mini-fill.c{ background: #44d07b; }
 
-/* Tooltip */
-.tooltip{
+.inv-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  transform: scale(var(--s, 0.35));
+  opacity: var(--o, 0.35);
+  transition: transform 0.25s ease, opacity 0.25s ease, filter 0.25s ease;
+  filter: saturate(1.1);
+}
+
+/* krāsas */
+.inv-dot.a { background: #ff4d4d; }
+.inv-dot.b { background: #32cd32; }
+.inv-dot.c { background: #4da3ff; }
+
+/* hover - “dzīves” efekts */
+.day:hover .inv-dot {
+  transform: scale(calc(var(--s, 0.35) + 0.12));
+  opacity: min(1, calc(var(--o, 0.35) + 0.15));
+  filter: saturate(1.25);
+}
+
+/* ==============================
+   Tooltip
+============================== */
+.tooltip {
   position: fixed;
-  z-index: 9999;
-  min-width: 260px;
-  background: rgba(10, 10, 12, 0.88);
-  border: 1px solid rgba(255,255,255,0.16);
-  border-radius: 16px;
-  box-shadow: 0 16px 50px rgba(0,0,0,0.5);
-  padding: 12px 12px 10px;
+  z-index: 2000;
   pointer-events: none;
+  width: 240px;
+  padding: 12px 12px 10px;
+  border-radius: 14px;
+  background: rgba(12, 12, 12, 0.92);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 18px 55px rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
   opacity: 0;
   transform: translateY(6px) scale(0.98);
-  transition: opacity .12s ease, transform .12s ease;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
-.tooltip.show{
+.tooltip.show {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0px) scale(1);
 }
 
-.tooltip-date{
+.tip-date {
   font-weight: 800;
   margin-bottom: 8px;
-  text-align: left;
-  opacity: 0.95;
+  font-size: 0.95rem;
 }
 
-.tt-row{
-  display:grid;
-  grid-template-columns: 36px 1fr 46px;
-  align-items:center;
+.tip-row {
+  display: grid;
+  grid-template-columns: 42px 1fr 40px;
   gap: 10px;
+  align-items: center;
   margin: 8px 0;
 }
 
-.tt-label{
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
+.tip-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 700;
   opacity: 0.95;
 }
 
-.tt-bar{
+.tip-bar {
   height: 10px;
   border-radius: 999px;
   background: rgba(255,255,255,0.10);
-  overflow:hidden;
+  overflow: hidden;
+  position: relative;
 }
 
-.tt-fill{
-  height:100%;
+.tip-fill {
+  display: block;
+  height: 100%;
   width: 0%;
   border-radius: 999px;
-  will-change: width;
+  transform-origin: left center;
+  transition: width 0.35s ease;
 }
-.tt-fill.a{ background: #ff4d4d; }
-.tt-fill.b{ background: #ffd24d; }
-.tt-fill.c{ background: #44d07b; }
 
-.tt-val{
-  text-align:right;
+.fill-a { background: #ff4d4d; }
+.fill-b { background: #32cd32; }
+.fill-c { background: #4da3ff; }
+
+.tip-val {
+  text-align: right;
   font-weight: 800;
-  opacity: 0.95;
 }
 
-.tooltip-note{
-  margin-top: 8px;
-  font-size: 0.85rem;
-  opacity: 0.8;
-  text-align:left;
-}
-
-@media (max-width: 768px){
-  .hero{ padding-top: 95px; }
-  .navbar ul { flex-direction: column; gap: 16px; }
-  .calendar-head{ flex-direction: column; align-items: stretch; }
-  .calendar-controls{ justify-content: space-between; }
-  .cal-month{ min-width: auto; flex: 1; }
+/* ==============================
+   Responsīvs
+============================== */
+@media (max-width: 768px) {
+  .navbar ul { flex-direction: column; gap: 18px; }
+  .hero-content h1 { font-size: 1.8rem; }
+  .calendar-grid { gap: 8px; }
+  .day { min-height: 68px; }
 }
