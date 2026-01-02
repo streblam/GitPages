@@ -1,122 +1,238 @@
-// script.js
+// ======== Config ========
+const monthNamesLv = [
+  "Janvāris","Februāris","Marts","Aprīlis","Maijs","Jūnijs",
+  "Jūlijs","Augusts","Septembris","Oktobris","Novembris","Decembris"
+];
+
+// Gredzenu radiusi + stroke platumi
+// (Ar šiem parametriem panākam, ka tie IR gredzeni un viens otrā.)
+const RINGS = [
+  { key: "a", r: 24, w: 6 }, // ārējais
+  { key: "b", r: 17, w: 6 }, // vidējais
+  { key: "c", r: 10, w: 6 }  // iekšējais
+];
+
 const grid = document.getElementById("calendarGrid");
 const monthLabel = document.getElementById("monthLabel");
-const prevBtn = document.getElementById("prevBtn");
-const nextBtn = document.getElementById("nextBtn");
 
-// Start: current month
-let viewDate = new Date();
+const tooltip = document.getElementById("tooltip");
+const ttDate = document.getElementById("ttDate");
+const ttA = document.getElementById("ttA");
+const ttB = document.getElementById("ttB");
+const ttC = document.getElementById("ttC");
 
-function lvMonthName(date) {
-  const months = [
-    "Janvāris","Februāris","Marts","Aprīlis","Maijs","Jūnijs",
-    "Jūlijs","Augusts","Septembris","Oktobris","Novembris","Decembris"
-  ];
-  return `${months[date.getMonth()]} ${date.getFullYear()}`;
+const prevBtn = document.getElementById("prevMonth");
+const nextBtn = document.getElementById("nextMonth");
+
+// ======== State ========
+let viewDate = new Date(); // šodiena
+viewDate.setDate(1);
+
+// Dataset: Map "YYYY-MM-DD" -> {a,b,c} (0..100)
+let dataset = new Map();
+
+function pad2(n){ return String(n).padStart(2,"0"); }
+function keyOf(date){
+  return `${date.getFullYear()}-${pad2(date.getMonth()+1)}-${pad2(date.getDate())}`;
 }
 
-// random dataset: A,B,C noslodze 0..100 katrai dienai
-function buildRandomData(year, month) {
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const data = {};
-  for (let d = 1; d <= daysInMonth; d++) {
-    // salīdzinoši “reālistiskāk” - nedaudz lielāka iespēja uz noslogotiem brīvdienās
-    const date = new Date(year, month, d);
-    const weekday = (date.getDay() + 6) % 7; // 0=Mon ... 6=Sun
-    const weekendBoost = (weekday >= 5) ? 18 : 0;
+// Random dataset vienam mēnesim
+function generateRandomDatasetForMonth(year, monthIndex){
+  const map = new Map();
+  const daysInMonth = new Date(year, monthIndex+1, 0).getDate();
 
-    const a = clamp(Math.round(rand(10, 85) + weekendBoost), 0, 100);
-    const b = clamp(Math.round(rand(5, 75) + weekendBoost / 2), 0, 100);
-    const c = clamp(Math.round(rand(0, 65) + weekendBoost / 3), 0, 100);
+  for (let d=1; d<=daysInMonth; d++){
+    // “Smukāks” random (nevis pilnīgi haotisks):
+    // neliels viļņveida pamats + random troksnis
+    const base = Math.round(50 + 35 * Math.sin((d / daysInMonth) * Math.PI * 2));
+    const clamp = (x)=> Math.max(0, Math.min(100, x));
 
-    data[d] = { a, b, c };
+    const a = clamp(base + randInt(-18, 18));
+    const b = clamp(base + randInt(-25, 25));
+    const c = clamp(base + randInt(-12, 30));
+
+    const dt = new Date(year, monthIndex, d);
+    map.set(keyOf(dt), { a, b, c });
   }
-  return data;
+  return map;
 }
 
-function rand(min, max) {
-  return Math.random() * (max - min) + min;
+function randInt(min, max){
+  return Math.floor(Math.random()*(max-min+1)) + min;
 }
 
-function clamp(v, min, max) {
-  return Math.max(min, Math.min(max, v));
+// ======== SVG Rings ========
+function ringsSvg(values, animateFromZero = false){
+  // SVG viewBox 0..64, centrs 32,32
+  // Stroke-dasharray izmantojam pēc apkārtmēra.
+  const size = 64;
+  const cx = 32, cy = 32;
+
+  const circles = RINGS.map(ring => {
+    const r = ring.r;
+    const circumference = 2 * Math.PI * r;
+    const pct = values[ring.key]; // 0..100
+    const filled = (pct / 100) * circumference;
+    const dashArray = `${filled} ${circumference - filled}`;
+    const dashOffset = animateFromZero ? circumference : 0;
+
+    return `
+      <circle class="ring-track" cx="${cx}" cy="${cy}" r="${r}" stroke-width="${ring.w}"></circle>
+      <circle
+        class="ring ${ring.key} ${ring.key}"
+        data-ring="${ring.key}"
+        cx="${cx}" cy="${cy}" r="${r}"
+        stroke-width="${ring.w}"
+        stroke-dasharray="${dashArray}"
+        stroke-dashoffset="${dashOffset}"
+      ></circle>
+    `;
+  }).join("");
+
+  return `
+    <svg class="rings" viewBox="0 0 ${size} ${size}" aria-hidden="true">
+      ${circles}
+    </svg>
+  `;
 }
 
-function renderCalendar() {
+function animateRingsIn(dayEl){
+  // Mazs “ielādes” efekts hover brīdī (stroke-dashoffset -> 0)
+  const rings = dayEl.querySelectorAll(".ring");
+  rings.forEach(r => {
+    const rAttr = r.getAttribute("r");
+    const circumference = 2 * Math.PI * Number(rAttr);
+    r.style.strokeDashoffset = circumference; // start
+    // nākamajā frame uz 0
+    requestAnimationFrame(() => {
+      r.style.strokeDashoffset = "0";
+    });
+  });
+}
+
+// ======== Calendar render ========
+function render(){
   grid.innerHTML = "";
 
   const y = viewDate.getFullYear();
   const m = viewDate.getMonth();
 
-  monthLabel.textContent = lvMonthName(viewDate);
+  // ja nav datu šim mēnesim — uzģenerē
+  dataset = generateRandomDatasetForMonth(y, m);
 
-  const data = buildRandomData(y, m);
+  monthLabel.textContent = `${monthNamesLv[m]} ${y}`;
 
-  const firstDay = new Date(y, m, 1);
-  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  // Pirmās dienas nedēļas diena (LV: P=1..Sv=7)
+  // JS: 0=Sv,1=Pr,...6=Se
+  const first = new Date(y, m, 1);
+  const jsDow = first.getDay(); // 0..6
+  // Mēs gribam kolonnas: P,O,T,C,P,S,Sv
+  // Pirmdienai jābūt 0. Tātad:
+  const offset = (jsDow === 0) ? 6 : jsDow - 1;
 
-  // convert to Monday-first index (0..6)
-  const startIndex = (firstDay.getDay() + 6) % 7;
-
-  // fill leading blanks
-  for (let i = 0; i < startIndex; i++) {
-    const blank = document.createElement("div");
-    blank.className = "day is-muted";
-    grid.appendChild(blank);
+  // Iepriekšējā mēneša dienas, lai aizpildītu sākumu
+  const prevMonthDays = new Date(y, m, 0).getDate();
+  for (let i=0; i<offset; i++){
+    const dayNum = prevMonthDays - offset + 1 + i;
+    const cell = document.createElement("div");
+    cell.className = "day muted";
+    cell.innerHTML = `<div class="day-number">${dayNum}</div>`;
+    grid.appendChild(cell);
   }
 
-  // create day cells
-  for (let day = 1; day <= daysInMonth; day++) {
-    const { a, b, c } = data[day];
+  // Šī mēneša dienas
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  for (let d=1; d<=daysInMonth; d++){
+    const dt = new Date(y, m, d);
+    const key = keyOf(dt);
+    const values = dataset.get(key);
 
     const cell = document.createElement("div");
     cell.className = "day";
+    cell.dataset.date = key;
 
     cell.innerHTML = `
-      <div class="day-top">
-        <div class="day-num">${day}</div>
-      </div>
-
-      <div class="rings-wrap">
-        <div class="rings">
-          <div class="ring outer a" data-target="${a}"></div>
-          <div class="ring mid b"   data-target="${b}"></div>
-          <div class="ring inner c" data-target="${c}"></div>
-        </div>
-      </div>
-
-      <div class="tooltip">
-        <b>${day}. ${lvMonthName(viewDate)}</b>
-        <div class="row"><span class="label"><span class="badge a"></span>Inventārs A</span><span>${a}%</span></div>
-        <div class="row"><span class="label"><span class="badge b"></span>Inventārs B</span><span>${b}%</span></div>
-        <div class="row"><span class="label"><span class="badge c"></span>Inventārs C</span><span>${c}%</span></div>
-      </div>
+      <div class="day-number">${d}</div>
+      ${ringsSvg(values, true)}
     `;
 
-    // initial state: show values (uzreiz)
-    const rings = [...cell.querySelectorAll(".ring")];
-    rings.forEach(r => r.style.setProperty("--p", r.dataset.target));
+    // Hover tooltip + animācija
+    cell.addEventListener("mouseenter", (e) => {
+      showTooltip(cell, values);
+      animateRingsIn(cell);
+    });
 
-    // hover animation: fill from 0 -> target
-    cell.addEventListener("mouseenter", () => {
-      rings.forEach(r => r.style.setProperty("--p", "0"));
-      requestAnimationFrame(() => {
-        rings.forEach(r => r.style.setProperty("--p", r.dataset.target));
-      });
+    cell.addEventListener("mousemove", (e) => {
+      moveTooltip(e.clientX, e.clientY);
+    });
+
+    cell.addEventListener("mouseleave", () => {
+      hideTooltip();
     });
 
     grid.appendChild(cell);
   }
+
+  // Aizpildi līdz pilnai rindai (neobligāti, bet vizuāli glīti)
+  const totalCells = offset + daysInMonth;
+  const remainder = totalCells % 7;
+  if (remainder !== 0){
+    const add = 7 - remainder;
+    for (let i=1; i<=add; i++){
+      const cell = document.createElement("div");
+      cell.className = "day muted";
+      cell.innerHTML = `<div class="day-number">${i}</div>`;
+      grid.appendChild(cell);
+    }
+  }
 }
 
+// ======== Tooltip ========
+function showTooltip(dayEl, values){
+  const dateStr = dayEl.dataset.date; // YYYY-MM-DD
+  ttDate.textContent = dateStr;
+  ttA.textContent = `${values.a}%`;
+  ttB.textContent = `${values.b}%`;
+  ttC.textContent = `${values.c}%`;
+
+  tooltip.classList.add("show");
+  tooltip.setAttribute("aria-hidden", "false");
+}
+
+function hideTooltip(){
+  tooltip.classList.remove("show");
+  tooltip.setAttribute("aria-hidden", "true");
+}
+
+function moveTooltip(x, y){
+  const pad = 14;
+  const rect = tooltip.getBoundingClientRect();
+  let left = x + pad;
+  let top = y + pad;
+
+  // lai neiziet ārpus ekrāna
+  const maxLeft = window.innerWidth - rect.width - 10;
+  const maxTop = window.innerHeight - rect.height - 10;
+
+  if (left > maxLeft) left = x - rect.width - pad;
+  if (top > maxTop) top = y - rect.height - pad;
+
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+}
+
+// ======== Controls ========
 prevBtn.addEventListener("click", () => {
-  viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1);
-  renderCalendar();
+  viewDate.setMonth(viewDate.getMonth() - 1);
+  viewDate.setDate(1);
+  render();
 });
 
 nextBtn.addEventListener("click", () => {
-  viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1);
-  renderCalendar();
+  viewDate.setMonth(viewDate.getMonth() + 1);
+  viewDate.setDate(1);
+  render();
 });
 
-renderCalendar();
+// Start
+render();
