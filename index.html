@@ -3,58 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mana Mājaslapa</title>
+  <title>Kalendārs – Inventāra noslodze</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-  <nav class="navbar">
-    <ul>
-      <li><a href="#">Sākums</a></li>
-      <li><a href="#">Par mani</a></li>
-      <li><a href="karte.html" class="karte-link">Karte</a></li>
-      <li><a href="#">Kontakti</a></li>
-    </ul>
-  </nav>
 
-  <div class="hero">
-    <div class="calendar-panel">
-      <div class="calendar-head">
-        <div>
-          <h2 class="calendar-title">Inventāra noslodze</h2>
-          <div class="calendar-sub">3 inventāra veidi · procentuāls aizņemtums</div>
-        </div>
+<nav class="navbar">
+  <ul>
+    <li><a href="#">Sākums</a></li>
+    <li><a href="#">Par mani</a></li>
+    <li><a href="karte.html" class="karte-link">Karte</a></li>
+    <li><a href="#">Kontakti</a></li>
+  </ul>
+</nav>
 
-        <div class="calendar-controls">
-          <button class="btn" id="prevMonth" aria-label="Iepriekšējais mēnesis">‹</button>
-          <div class="month-label" id="monthLabel">—</div>
-          <button class="btn" id="nextMonth" aria-label="Nākamais mēnesis">›</button>
-        </div>
-      </div>
-
-      <div class="legend">
-        <div class="legend-item"><span class="dot a"></span> Inventārs A</div>
-        <div class="legend-item"><span class="dot b"></span> Inventārs B</div>
-        <div class="legend-item"><span class="dot c"></span> Inventārs C</div>
-      </div>
-
-      <div class="dow">
-        <div>P</div><div>O</div><div>T</div><div>C</div><div>P</div><div>S</div><div>Sv</div>
-      </div>
-
-      <div class="calendar-grid" id="calendarGrid"></div>
+<div class="hero">
+  <div class="calendar-wrap">
+    <div class="calendar-header">
+      <button class="nav-btn" id="prevBtn" aria-label="Iepriekšējais mēnesis">‹</button>
+      <div class="month-title" id="monthTitle">Janvāris 2026</div>
+      <button class="nav-btn" id="nextBtn" aria-label="Nākamais mēnesis">›</button>
     </div>
 
-    <!-- Tooltip -->
-    <div class="tooltip" id="tooltip" aria-hidden="true">
-      <div class="tooltip-date" id="ttDate">—</div>
-      <div class="tooltip-row"><span class="dot a"></span> A: <b id="ttA">0%</b></div>
-      <div class="tooltip-row"><span class="dot b"></span> B: <b id="ttB">0%</b></div>
-      <div class="tooltip-row"><span class="dot c"></span> C: <b id="ttC">0%</b></div>
-      <div class="tooltip-note">Jo lielāks %, jo vairāk aizņemts.</div>
+    <div class="weekdays">
+      <div>Sv</div><div>Pr</div><div>Ot</div><div>Tr</div><div>Ce</div><div>Pk</div><div>Se</div>
+    </div>
+
+    <div class="grid" id="calendarGrid"></div>
+
+    <div class="legend">
+      <div class="legend-title">Leģenda (inventārs):</div>
+
+      <div class="legend-row">
+        <span class="legend-dot inv-a"></span>
+        <span class="legend-text">Inventārs A</span>
+
+        <span class="legend-dot inv-b"></span>
+        <span class="legend-text">Inventārs B</span>
+
+        <span class="legend-dot inv-c"></span>
+        <span class="legend-text">Inventārs C</span>
+      </div>
+
+      <div class="legend-note">
+        Katras dienas 3 joslas rāda, cik % inventāra ir aizņemts (0–100%).
+      </div>
     </div>
   </div>
+</div>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
