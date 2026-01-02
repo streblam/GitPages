@@ -7,67 +7,45 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <nav class="navbar">
+    <ul>
+      <li><a href="#">Sākums</a></li>
+      <li><a href="#">Par mani</a></li>
+      <li><a href="karte.html" class="karte-link">Karte</a></li>
+      <li><a href="#">Kontakti</a></li>
+    </ul>
+  </nav>
 
-<nav class="navbar">
-  <ul>
-    <li><a href="#">Sākums</a></li>
-    <li><a href="#">Par mani</a></li>
-    <li><a href="karte.html" class="karte-link">Karte</a></li>
-    <li><a href="#">Kontakti</a></li>
-  </ul>
-</nav>
+  <div class="hero">
+    <div class="hero-content">
+      <h1>Inventāra noslodze</h1>
+      <p>Prototips: katrai dienai 3 inventāra grupu noslodzes riņķi.</p>
 
-<div class="hero">
-  <div class="hero-content">
-    <h1>Inventāra noslodze</h1>
-    <p>Prototips: 3 inventāra veidi, procentuāls aizpildījums pa dienām.</p>
-
-    <section class="calendar-card">
-      <div class="calendar-header">
-        <button class="cal-btn" id="prevBtn" aria-label="Iepriekšējais mēnesis">‹</button>
-        <div>
-          <div class="cal-title" id="monthTitle">Mēnesis</div>
-          <div class="cal-subtitle">Hover uz dienas, lai redzētu detaļas</div>
+      <section class="calendar-card">
+        <div class="calendar-head">
+          <button class="cal-btn" id="prevBtn" aria-label="Iepriekšējais mēnesis">‹</button>
+          <div class="cal-title">
+            <div class="cal-month" id="monthLabel">Mēnesis</div>
+            <div class="cal-legend">
+              <span class="legend-item"><span class="dot dot-a"></span> Inventārs A</span>
+              <span class="legend-item"><span class="dot dot-b"></span> Inventārs B</span>
+              <span class="legend-item"><span class="dot dot-c"></span> Inventārs C</span>
+            </div>
+          </div>
+          <button class="cal-btn" id="nextBtn" aria-label="Nākamais mēnesis">›</button>
         </div>
-        <button class="cal-btn" id="nextBtn" aria-label="Nākamais mēnesis">›</button>
-      </div>
 
-      <div class="calendar-legend">
-        <div class="legend-item"><span class="dot dot-a"></span> Inventārs A</div>
-        <div class="legend-item"><span class="dot dot-b"></span> Inventārs B</div>
-        <div class="legend-item"><span class="dot dot-c"></span> Inventārs C</div>
-      </div>
+        <div class="calendar-weekdays">
+          <div>P</div><div>O</div><div>T</div><div>C</div><div>P</div><div>S</div><div>Sv</div>
+        </div>
 
-      <div class="calendar-grid" id="calendarGrid">
-        <!-- JS uzģenerēs -->
-      </div>
-    </section>
-  </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
 
-  <!-- Tooltip (vienreiz, globāls) -->
-  <div class="tooltip" id="tooltip" aria-hidden="true">
-    <div class="tip-date" id="tipDate">Datums</div>
-
-    <div class="tip-row">
-      <div class="tip-label"><span class="dot dot-a"></span> A</div>
-      <div class="tip-bar"><span class="tip-fill fill-a" id="fillA"></span></div>
-      <div class="tip-val" id="valA">0%</div>
-    </div>
-
-    <div class="tip-row">
-      <div class="tip-label"><span class="dot dot-b"></span> B</div>
-      <div class="tip-bar"><span class="tip-fill fill-b" id="fillB"></span></div>
-      <div class="tip-val" id="valB">0%</div>
-    </div>
-
-    <div class="tip-row">
-      <div class="tip-label"><span class="dot dot-c"></span> C</div>
-      <div class="tip-bar"><span class="tip-fill fill-c" id="fillC"></span></div>
-      <div class="tip-val" id="valC">0%</div>
+        <div class="cal-hint">Uzbrauc ar peli uz dienas — redzēsi procentus un animāciju.</div>
+      </section>
     </div>
   </div>
-</div>
 
-<script src="app.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
