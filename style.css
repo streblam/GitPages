@@ -16,12 +16,10 @@ body, html {
   background: url('mainpage.jpg') no-repeat center center fixed;
   background-size: cover;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
   position: relative;
-  padding: 90px 16px 40px;
+  display: grid;
+  place-items: center;
+  padding-top: 80px; /* lai navbar nepārklāj */
 }
 
 .hero::before {
@@ -29,23 +27,6 @@ body, html {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 1000px;
-  width: 100%;
-}
-
-.hero-content h1 {
-  margin: 0 0 6px;
-  font-size: 2.4rem;
-}
-
-.hero-content p {
-  margin: 0 0 18px;
-  opacity: 0.9;
 }
 
 /* ==============================
@@ -72,8 +53,6 @@ body, html {
   gap: 40px;
 }
 
-.navbar li { position: relative; }
-
 .navbar a {
   text-decoration: none;
   color: #f0f0f0;
@@ -93,241 +72,234 @@ body, html {
   font-weight: 700;
   text-shadow: 0 0 6px rgba(50, 205, 50, 0.8);
 }
-.karte-link:hover { color: #7fff00; }
+
+.karte-link:hover {
+  color: #7fff00;
+}
 
 /* ==============================
-   Kalendāra kartīte
+   Calendar panel
 ============================== */
-.calendar-card {
-  margin: 0 auto;
-  width: min(920px, 100%);
-  background: rgba(15, 15, 15, 0.55);
+.calendar-panel {
+  position: relative;
+  z-index: 1;
+  width: min(980px, calc(100vw - 28px));
+  background: rgba(12, 12, 12, 0.62);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 18px;
-  padding: 16px;
+  padding: 18px 18px 16px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.45);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 12px 36px rgba(0,0,0,0.35);
 }
 
 .calendar-head {
-  display: grid;
-  grid-template-columns: 44px 1fr 44px;
+  display: flex;
+  gap: 16px;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
-.cal-btn {
-  height: 40px;
-  width: 44px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.16);
+.calendar-title {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: 0.2px;
+}
+
+.calendar-sub {
+  opacity: 0.85;
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+.calendar-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn {
+  border: 1px solid rgba(255,255,255,0.18);
   background: rgba(255,255,255,0.08);
   color: #fff;
-  font-size: 1.4rem;
-  cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease;
-}
-.cal-btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.12); }
-
-.cal-title {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.cal-month {
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  font-size: 1.1rem;
-}
-
-.cal-legend {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  opacity: 0.95;
-  font-size: 0.92rem;
-}
-
-.legend-item { display: inline-flex; align-items: center; gap: 8px; }
-.dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
-.dot-a { background: #ff4d4d; }
-.dot-b { background: #2dd4bf; }
-.dot-c { background: #a78bfa; }
-
-.calendar-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  padding: 8px 4px 10px;
-  opacity: 0.9;
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-}
-
-.day {
-  position: relative;
-  min-height: 84px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-}
-
-.day:hover {
-  transform: translateY(-2px);
-  background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.18);
-}
-
-.day.is-muted {
-  opacity: 0.45;
-  cursor: default;
-}
-
-.day-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 10px 0;
-  font-weight: 800;
-}
-
-.day-num { font-size: 1rem; }
-
-.rings-wrap {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-}
-
-/* ==============================
-   3 koncentriskie progress ring
-   - ar conic-gradient + mask
-============================== */
-
-/* Lai var animēt CSS custom prop */
-@property --p {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 0;
-}
-
-.rings {
-  position: relative;
-  width: 46px;
-  height: 46px;
-}
-
-.ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  --p: 0;        /* animējam no 0 -> uz target */
-  --c: #fff;
-  --t: 5px;      /* “līnijas” biezums */
-  background:
-    conic-gradient(var(--c) calc(var(--p) * 1%), rgba(255,255,255,0.14) 0);
-  -webkit-mask:
-    radial-gradient(farthest-side,
-      transparent calc(50% - var(--t)),
-      #000 calc(50% - var(--t) + 0.8px)
-    );
-  mask:
-    radial-gradient(farthest-side,
-      transparent calc(50% - var(--t)),
-      #000 calc(50% - var(--t) + 0.8px)
-    );
-  transition: --p 520ms cubic-bezier(.2,.9,.2,1);
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.30));
-}
-
-/* Outer / Mid / Inner izmēri */
-.ring.outer { inset: 0; --t: 5px; }
-.ring.mid   { inset: 7px; --t: 5px; }
-.ring.inner { inset: 14px; --t: 5px; }
-
-/* Krāsas */
-.ring.a { --c: #ff4d4d; }
-.ring.b { --c: #2dd4bf; }
-.ring.c { --c: #a78bfa; }
-
-/* Hover “pulse” */
-.day:hover .rings {
-  transform: scale(1.04);
-  transition: transform 160ms ease;
-}
-
-/* Tooltip */
-.tooltip {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 10px;
-  padding: 10px 10px;
   border-radius: 12px;
-  background: rgba(0,0,0,0.55);
-  border: 1px solid rgba(255,255,255,0.14);
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 160ms ease, transform 160ms ease;
-  pointer-events: none;
-  font-size: 0.92rem;
-  text-align: left;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: transform .15s ease, background .2s ease;
 }
 
-.day:hover .tooltip {
-  opacity: 1;
-  transform: translateY(0);
+.btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.14); }
+.btn:active { transform: translateY(0px); }
+
+.month-label {
+  min-width: 180px;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
 
-.tooltip b { font-weight: 800; }
-.tooltip .row {
+/* Legend */
+.legend {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 4px;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 12px;
   opacity: 0.95;
+  font-size: 0.95rem;
 }
-.tooltip .label {
+
+.legend-item {
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
-.badge {
+
+.dot {
   width: 10px;
   height: 10px;
   border-radius: 999px;
+  display: inline-block;
 }
-.badge.a { background: #ff4d4d; }
-.badge.b { background: #2dd4bf; }
-.badge.c { background: #a78bfa; }
+.dot.a { background: #ff4d4d; }
+.dot.b { background: #4da3ff; }
+.dot.c { background: #38d68a; }
 
-.cal-hint {
-  margin-top: 10px;
+/* Day-of-week row */
+.dow {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
   opacity: 0.85;
-  font-size: 0.92rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Grid */
+.calendar-grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+/* Day cell */
+.day {
+  position: relative;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  height: 110px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .15s ease, background .2s ease, border-color .2s ease;
+}
+
+.day:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.18);
+}
+
+.day.muted {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.day-number {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  opacity: 0.95;
+}
+
+/* ==============================
+   SVG ring badge (3 gredzeni)
+============================== */
+.rings {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 62px;
+  height: 62px;
+  opacity: 0.95;
+}
+
+.ring-track {
+  fill: none;
+  stroke: rgba(255,255,255,0.16);
+}
+
+.ring {
+  fill: none;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dashoffset 420ms cubic-bezier(.2,.8,.2,1);
+}
+
+.ring.a { stroke: #ff4d4d; }
+.ring.b { stroke: #4da3ff; }
+.ring.c { stroke: #38d68a; }
+
+/* ==============================
+   Tooltip
+============================== */
+.tooltip {
+  position: fixed;
+  z-index: 2000;
+  min-width: 210px;
+  padding: 12px 12px 10px;
+  background: rgba(10,10,10,0.92);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px) scale(0.98);
+  transition: opacity .12s ease, transform .12s ease;
+}
+
+.tooltip.show {
+  opacity: 1;
+  transform: translateY(0px) scale(1);
+}
+
+.tooltip-date {
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.tooltip-note {
+  margin-top: 8px;
+  opacity: 0.75;
+  font-size: 0.85rem;
 }
 
 /* ==============================
    Responsive
 ============================== */
-@media (max-width: 768px) {
-  .navbar ul { flex-direction: column; gap: 16px; }
-  .hero-content h1 { font-size: 1.8rem; }
-  .calendar-weekdays, .calendar-grid { gap: 8px; }
-  .day { min-height: 74px; }
+@media (max-width: 820px) {
+  .day { height: 96px; }
+  .rings { width: 58px; height: 58px; }
+}
+
+@media (max-width: 600px) {
+  .calendar-controls .month-label { min-width: 140px; }
+  .calendar-grid { gap: 8px; }
+  .dow { gap: 8px; }
+  .day { height: 88px; border-radius: 14px; }
 }
