@@ -43,16 +43,21 @@ function colorByAvailability(availPct){
   return `hsl(${hue} 85% 48%)`;
 }
 
-// Drošs datums: pusdienlaiks, lai DST nesabojā dienas
 function parseLvDateLocalNoon(v){
   const s = String(v ?? "").trim();
   const parts = s.split(".");
   if (parts.length < 3) return null;
+
   const y = Number(parts[0]);
-  const m = Number(parts[1]);
-  const d = Number(parts[2]);
-  if (![y,m,d].every(Number.isFinite)) return null;
-  return new Date(y, m-1, d, 12, 0, 0);
+  const d = Number(parts[1]); // DIENA
+  const m = Number(parts[2]); // MĒNESIS
+
+  if (![y, m, d].every(Number.isFinite)) return null;
+  if (m < 1 || m > 12) return null;
+  if (d < 1 || d > 31) return null;
+
+  // 12:00 vietējā laikā, lai DST nekad nenobīda dienu
+  return new Date(y, m - 1, d, 12, 0, 0);
 }
 
 function toInt(v){
