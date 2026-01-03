@@ -1,18 +1,16 @@
-const CSV_PATH = "./rezervacijas.csv?v=20260104";
-
-// Inventārs
-const MAX_TOTAL = 24 + 8 + 4;
+// ===== CONFIG =====
+const CSV_URL = "./rezervacijas.csv?v=20260104"; // CSV tajā pašā mapē
+const MAX_TOTAL = 24 + 8 + 4; // 36 vienības
 
 const monthNamesLv = [
   "Janvāris","Februāris","Marts","Aprīlis","Maijs","Jūnijs",
   "Jūlijs","Augusts","Septembris","Oktobris","Novembris","Decembris"
 ];
 
-const gridEl = document.getElementById("calendarGrid");
-const titleEl = document.getElementById("monthTitle");
-
-const gridMiniEl = document.getElementById("calendarGridMini");
-const titleMiniEl = document.getElementById("monthTitleMini");
+const gridMain = document.getElementById("gridMain");
+const gridMini = document.getElementById("gridMini");
+const titleMain = document.getElementById("monthTitle");
+const titleMini = document.getElementById("monthTitleMini");
 
 const now = new Date();
 let viewYear = now.getFullYear();
@@ -30,22 +28,22 @@ document.getElementById("nextBtn").addEventListener("click", async () => {
   await renderAll();
 });
 
-// ---------- Helpers ----------
-function clamp(n, min=0, max=100){ return Math.max(min, Math.min(max, n)); }
+// ---- helpers ----
+function clamp(n, min = 0, max = 100){ return Math.max(min, Math.min(max, n)); }
 
-function ymdLocal(y, m0, d){
+function ymd(y, m0, d){
   return `${y}-${String(m0+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
 }
 
-// HSL: 0% pieejams = sarkans, 100% = zaļš
-function colorByAvailability(pct){
-  const p = clamp(pct) / 100;
+// 0% pieejams => sarkans, 100% => zaļš
+function colorByAvailability(availPct){
+  const p = clamp(availPct) / 100;
   const hue = 120 * p;
   return `hsl(${hue} 85% 48%)`;
 }
 
-// Datumu parsējam “droši”: liekam pusdienlaikā, lai DST nepabīda dienu
-function parseLvDateToLocalNoon(v){
+// Drošs datums: pusdienlaiks, lai DST nesabojā dienas
+function parseLvDateLocalNoon(v){
   const s = String(v ?? "").trim();
   const parts = s.split(".");
   if (parts.length < 3) return null;
@@ -53,7 +51,7 @@ function parseLvDateToLocalNoon(v){
   const m = Number(parts[1]);
   const d = Number(parts[2]);
   if (![y,m,d].every(Number.isFinite)) return null;
-  return new Date(y, m - 1, d, 12, 0, 0); // 12:00 local
+  return new Date(y, m-1, d, 12, 0, 0);
 }
 
 function toInt(v){
@@ -61,7 +59,7 @@ function toInt(v){
   return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
 }
 
-// CSV parseris ar pēdiņām (ja ir komati tekstos)
+// Robusts CSV parseris ar pēdiņām (ja tekstos ir komati)
 function parseCSV(text){
   const rows = [];
   let row = [];
@@ -80,10 +78,10 @@ function parseCSV(text){
 
     if (!inQuotes && (c === "," || c === "\n" || c === "\r")) {
       if (c === "\r" && next === "\n") i++;
-      row.push(cell);
+      row.push(cell.trim());
       cell = "";
       if (c === "\n" || c === "\r") {
-        if (row.some(x => x.trim() !== "")) rows.push(row.map(x => x.trim()));
+        if (row.some(x => x !== "")) rows.push(row);
         row = [];
       }
       continue;
@@ -92,14 +90,18 @@ function parseCSV(text){
     cell += c;
   }
 
-  row.push(cell);
-  if (row.some(x => x.trim() !== "")) rows.push(row.map(x => x.trim()));
+  row.push(cell.trim());
+  if (row.some(x => x !== "")) rows.push(row);
   return rows;
 }
 
-// Aprēķina: YYYY-MM-DD -> load%
-async function computeLoadMapFromCSV(){
-  const res = await fetch(CSV_PATH, { cache: "no-store" });
+// YYYY-MM-DD -> load%
+let loadCache = null;
+
+async function getLoadMap(){
+  if (loadCache) return loadCache;
+
+  const res = await fetch(CSV_URL, { cache: "no-store" });
   if (!res.ok) throw new Error("Neizdevās ielādēt rezervacijas.csv");
 
   const text = await res.text();
@@ -133,8 +135,8 @@ async function computeLoadMapFromCSV(){
     const status = String(row[iStatus] ?? "").trim().toUpperCase();
     if (status !== "APSTIPRINĀTS") continue;
 
-    const start = parseLvDateToLocalNoon(row[iStart]);
-    const end   = parseLvDateToLocalNoon(row[iEnd]);
+    const start = parseLvDateLocalNoon(row[iStart]);
+    const end   = parseLvDateLocalNoon(row[iEnd]);
     if (!start || !end) continue;
 
     const units = toInt(row[iVista]) + toInt(row[iKanoe]) + toInt(row[iSup]);
@@ -142,7 +144,7 @@ async function computeLoadMapFromCSV(){
 
     // ieskaitot beigu datumu
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const key = ymdLocal(d.getFullYear(), d.getMonth(), d.getDate());
+      const key = ymd(d.getFullYear(), d.getMonth(), d.getDate());
       usedByDay[key] = (usedByDay[key] || 0) + units;
     }
   }
@@ -153,55 +155,48 @@ async function computeLoadMapFromCSV(){
     loadPct[day] = Math.round((used / MAX_TOTAL) * 100);
   }
 
-  return loadPct;
-}
-
-let loadCache = null;
-async function getLoadMap(){
-  if (loadCache) return loadCache;
-  loadCache = await computeLoadMapFromCSV();
+  loadCache = loadPct;
   return loadCache;
 }
 
-// Vienmēr renderē 42 šūnas (6 nedēļas)
-function renderMonthGrid(targetGridEl, year, month0, loadMap, showTooltip){
-  targetGridEl.innerHTML = "";
+// Vienmēr 42 šūnas (6 nedēļas) => izmērs nemainās
+function renderMonth(targetGrid, year, month0, loadMap, withTooltip){
+  targetGrid.innerHTML = "";
 
   const first = new Date(year, month0, 1, 12, 0, 0);
   const startWeekday = first.getDay(); // Sv=0..Se=6
   const daysInMonth = new Date(year, month0 + 1, 0).getDate();
 
-  const totalCells = 42;
-  for (let i = 0; i < totalCells; i++){
+  for (let i = 0; i < 42; i++){
     const dayNum = i - startWeekday + 1;
 
     if (dayNum < 1 || dayNum > daysInMonth){
       const empty = document.createElement("div");
       empty.className = "day empty";
-      targetGridEl.appendChild(empty);
+      targetGrid.appendChild(empty);
       continue;
     }
 
-    const key = ymdLocal(year, month0, dayNum);
+    const key = ymd(year, month0, dayNum);
     const load = key in loadMap ? clamp(loadMap[key]) : 0;
     const avail = 100 - load;
 
     const cell = document.createElement("div");
     cell.className = "day";
 
-    if (showTooltip){
-      const tooltip = document.createElement("div");
-      tooltip.className = "tooltip";
-      tooltip.innerHTML = `
+    if (withTooltip){
+      const tip = document.createElement("div");
+      tip.className = "tip";
+      tip.innerHTML = `
         <b>${dayNum}. ${monthNamesLv[month0]}</b>
         <div>Pieejams: <b>${avail}%</b></div>
         <div>Noslodze: <b>${load}%</b></div>
       `;
-      cell.appendChild(tooltip);
+      cell.appendChild(tip);
     }
 
     const num = document.createElement("div");
-    num.className = "day-num";
+    num.className = "daynum";
     num.textContent = dayNum;
 
     const vbar = document.createElement("div");
@@ -209,7 +204,6 @@ function renderMonthGrid(targetGridEl, year, month0, loadMap, showTooltip){
 
     const vfill = document.createElement("div");
     vfill.className = "vfill";
-    vfill.style.height = "0%";
     vfill.style.backgroundColor = colorByAvailability(avail);
 
     vbar.appendChild(vfill);
@@ -218,35 +212,25 @@ function renderMonthGrid(targetGridEl, year, month0, loadMap, showTooltip){
 
     requestAnimationFrame(() => { vfill.style.height = `${avail}%`; });
 
-    // hover “pārspēlē” tikai galvenajā kalendārā
-    if (showTooltip){
-      cell.addEventListener("mouseenter", () => {
-        vfill.style.height = "0%";
-        vfill.style.backgroundColor = colorByAvailability(avail);
-        requestAnimationFrame(() => { vfill.style.height = `${avail}%`; });
-      });
-    }
-
-    targetGridEl.appendChild(cell);
+    targetGrid.appendChild(cell);
   }
 }
 
 async function renderAll(){
   const loadMap = await getLoadMap();
 
-  // Galvenais mēnesis
-  titleEl.textContent = `${monthNamesLv[viewMonth]} ${viewYear}`;
-  renderMonthGrid(gridEl, viewYear, viewMonth, loadMap, true);
+  titleMain.textContent = `${monthNamesLv[viewMonth]} ${viewYear}`;
+  renderMonth(gridMain, viewYear, viewMonth, loadMap, true);
 
-  // Nākamais mēnesis (mini)
   const next = new Date(viewYear, viewMonth + 1, 1, 12, 0, 0);
   const ny = next.getFullYear();
   const nm = next.getMonth();
-  titleMiniEl.textContent = `${monthNamesLv[nm]} ${ny}`;
-  renderMonthGrid(gridMiniEl, ny, nm, loadMap, false);
+
+  titleMini.textContent = `${monthNamesLv[nm]} ${ny}`;
+  renderMonth(gridMini, ny, nm, loadMap, false);
 }
 
 renderAll().catch(err => {
   console.error(err);
-  titleEl.textContent = "Kļūda ielādējot datus";
+  titleMain.textContent = "Kļūda ielādējot datus";
 });
