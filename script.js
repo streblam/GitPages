@@ -7,6 +7,7 @@ const monthNamesLv = [
   "Jūlijs","Augusts","Septembris","Oktobris","Novembris","Decembris"
 ];
 
+
 const gridMain = document.getElementById("gridMain");
 const gridMini = document.getElementById("gridMini");
 const titleMain = document.getElementById("monthTitle");
