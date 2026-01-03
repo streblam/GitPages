@@ -18,29 +18,38 @@
 </nav>
 
 <div class="hero">
-  <div class="calendar-wrap">
+  <div class="calendar-shell">
 
-    <div class="calendar-header">
-      <button class="nav-btn" id="prevBtn">‹</button>
-      <div class="month-title" id="monthTitle">—</div>
-      <button class="nav-btn" id="nextBtn">›</button>
+    <div class="calendar-wrap calendar-main">
+      <div class="calendar-header">
+        <button class="nav-btn" id="prevBtn" aria-label="Iepriekšējais mēnesis">‹</button>
+        <div class="month-title" id="monthTitle">—</div>
+        <button class="nav-btn" id="nextBtn" aria-label="Nākamais mēnesis">›</button>
+      </div>
+
+      <div class="weekdays">
+        <div>Sv</div><div>Pr</div><div>Ot</div><div>Tr</div><div>Ce</div><div>Pk</div><div>Se</div>
+      </div>
+
+      <div class="grid" id="calendarGrid"></div>
     </div>
 
-    <div class="weekdays">
-      <div>Sv</div><div>Pr</div><div>Ot</div><div>Tr</div>
-      <div>Ce</div><div>Pk</div><div>Se</div>
-    </div>
+    <div class="calendar-wrap calendar-mini" aria-label="Nākamais mēnesis">
+      <div class="calendar-header mini-header">
+        <div class="month-title mini-title" id="monthTitleMini">—</div>
+      </div>
 
-    <div class="grid" id="calendarGrid"></div>
+      <div class="weekdays mini-weekdays">
+        <div>Sv</div><div>Pr</div><div>Ot</div><div>Tr</div><div>Ce</div><div>Pk</div><div>Se</div>
+      </div>
 
-    <div class="legend">
-      <b>Leģenda:</b> Zaļš = pieejams, Sarkans = noslogots
-      <div class="scale-bar"></div>
+      <div class="grid mini-grid" id="calendarGridMini"></div>
     </div>
 
   </div>
 </div>
 
-<script src="script.js"></script>
+<script src="script.js?v=20260104"></script>
+
 </body>
 </html>
