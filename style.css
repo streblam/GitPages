@@ -1,99 +1,217 @@
-html, body {
-  margin: 0;
-  font-family: Arial, sans-serif;
+:root{
+  --gap: 10px;
+  --dayH: 92px;
+  --miniDayH: 72px;
 }
 
-.navbar {
+*{ box-sizing: border-box; }
+html, body{ margin:0; padding:0; font-family: Arial, sans-serif; }
+
+.navbar{
   position: fixed;
   top: 0;
   width: 100%;
-  background: #111;
-  padding: 12px;
+  background: rgba(17,17,17,0.92);
+  padding: 12px 0;
+  z-index: 10;
 }
-.navbar ul {
-  list-style: none;
-  display: flex;
-  justify-content: center;
-  gap: 30px;
+.navbar ul{
+  list-style:none;
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  margin:0;
+  padding:0;
 }
-.navbar a { color: white; text-decoration: none; }
+.navbar a{ color:#fff; text-decoration:none; }
 
-.hero {
-  background: #222;
+.hero{
   min-height: 100vh;
+  background: #222;
   display: grid;
   place-items: center;
   padding-top: 70px;
 }
 
-/* 2 kalendāri blakus */
-.calendar-shell{
-  position: relative;
-  z-index: 1;
+.shell{
+  width: min(980px, calc(100vw - 28px));
   display: grid;
-  grid-template-columns: 1fr 0.72fr; /* labais mazāks */
+  grid-template-columns: 1fr 0.72fr;
   gap: 16px;
   align-items: start;
-  width: min(980px, calc(100vw - 28px));
 }
 
-/* padarām kartītes mazākas kopumā */
-.calendar-wrap{
-  width: 100%;
+.card{
+  background: rgba(255,255,255,0.95);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
   padding: 14px 14px 12px;
+  color: #111827;
 }
 
-/* FIKSĒTS AUGSTUMS: vienmēr 6 rindas (42 šūnas) => grid nemaina augstumu */
-.grid{
-  /* 6 rindas * (min-height + gap) aptuveni. Precīzi nav jātrāpa, galvenais lai vienmēr vienāds. */
-  min-height: 6 * 92px + 5 * 10px; /* ja tev day min-height=92 un gap=10 */
+.head{
+  display: grid;
+  grid-template-columns: 56px 1fr 56px;
+  align-items:center;
+  gap: 8px;
+  padding-bottom: 8px;
 }
+.head-mini{ grid-template-columns: 1fr; }
 
-/* MINI kalendārs: mazāki fonti, šūnas, stabiņš */
-.calendar-mini .month-title{
-  font-size: 18px;
+.title{
+  text-align:center;
   font-weight: 800;
+  font-size: 26px;
 }
-.calendar-mini .weekdays{
+.title-mini{ font-size: 18px; }
+
+.navbtn{
+  border: none;
+  background: transparent;
+  font-size: 34px;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+.navbtn:hover{ background: rgba(0,0,0,0.06); }
+
+.weekdays{
+  display: grid;
+  grid-template-columns: repeat(7,1fr);
+  gap: var(--gap);
+  padding: 4px 2px 10px;
+  color:#4b5563;
+  font-weight: 700;
+}
+.weekdays > div{ text-align:center; }
+
+.weekdays-mini{
+  gap: 8px;
   font-size: 12px;
-  gap: 8px;
+  padding-bottom: 8px;
 }
-.calendar-mini .grid{
-  gap: 8px;
-  padding: 0 4px 10px;
-  min-height: 6 * 72px + 5 * 8px;
+
+.grid{
+  display: grid;
+  grid-template-columns: repeat(7,1fr);
+  gap: var(--gap);
+  padding-bottom: 10px;
+
+  /* FIKSĒTAIS AUGSTUMS: 6 rindas (42 šūnas) */
+  min-height: calc(6 * var(--dayH) + 5 * var(--gap));
 }
-.calendar-mini .day{
-  min-height: 72px;
+
+.grid-mini{
+  gap: 8px;
+  min-height: calc(6 * var(--miniDayH) + 5 * 8px);
+}
+
+.day{
+  position: relative;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 10px;
+  min-height: var(--dayH);
+  overflow: visible;
+}
+
+.mini .day{
+  min-height: var(--miniDayH);
   padding: 8px;
 }
-.calendar-mini .day-num{
-  font-size: 14px;
+
+.day.empty{
+  background: transparent;
+  border-color: transparent;
+  pointer-events: none;
 }
-.calendar-mini .vbar{
-  width: 12px;
-  height: 40px;
+
+.daynum{
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.mini .daynum{ font-size: 14px; }
+
+.vbar{
+  position:absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 14px;
+  height: 52px;
+  background: #edf0f3;
+  border-radius: 999px;
+  overflow: hidden;
+  display:flex;
+  align-items:flex-end;
+  box-shadow: inset 0 0 0 1px rgba(17,24,39,0.06);
+}
+
+.mini .vbar{
   right: 8px;
   bottom: 8px;
-}
-.calendar-mini .tooltip{
-  display:none; /* lai mini nepārblīvē */
-}
-
-/* Mini header bez bultiņām */
-.mini-header{
-  grid-template-columns: 1fr;
-}
-.mini-title{
-  text-align: center;
+  width: 12px;
+  height: 40px;
 }
 
-/* Mobilajā: saliekam vienu zem otra */
+.vfill{
+  width:100%;
+  height:0%;
+  border-radius: 999px;
+  transition: height 520ms cubic-bezier(.2,.8,.2,1);
+}
+
+/* Tooltip tikai galvenajā */
+.tip{
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  transform: translate(-50%, -100%);
+  background: rgba(17,24,39,0.95);
+  color:#fff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  width: 220px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+  z-index: 5;
+}
+.tip::after{
+  content:"";
+  position:absolute;
+  left: 50%;
+  bottom: -7px;
+  transform: translateX(-50%);
+  border-width: 7px 7px 0 7px;
+  border-style: solid;
+  border-color: rgba(17,24,39,0.95) transparent transparent transparent;
+}
+.main .day:hover .tip{
+  opacity: 1;
+  transform: translate(-50%, -100%) scale(1);
+}
+
+.legend{
+  border-top: 1px solid #eef0f3;
+  padding-top: 10px;
+}
+.legend-row{
+  display:flex;
+  gap:10px;
+  align-items: baseline;
+  color:#374151;
+  font-size: 13px;
+}
+.scale{
+  margin-top: 8px;
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgb(239,68,68), rgb(245,158,11), rgb(34,197,94));
+  border: 1px solid rgba(17,24,39,0.10);
+}
+
+/* Mobile: vienā kolonnā */
 @media (max-width: 860px){
-  .calendar-shell{
-    grid-template-columns: 1fr;
-  }
-  .calendar-mini{
-    opacity: 0.98;
-  }
+  .shell{ grid-template-columns: 1fr; }
 }
