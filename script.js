@@ -1,5 +1,3 @@
-// ======= Vienkāršs prototips ar “random” datiem (1 mēnesim) =======
-
 const monthNamesLv = [
   "Janvāris","Februāris","Marts","Aprīlis","Maijs","Jūnijs",
   "Jūlijs","Augusts","Septembris","Oktobris","Novembris","Decembris"
@@ -23,132 +21,94 @@ document.getElementById("nextBtn").addEventListener("click", () => {
   render();
 });
 
-// Random dataset: { "YYYY-MM-DD": { a: %, b: %, c: % } }
-let data = {};
-
 function pad2(n){ return String(n).padStart(2,"0"); }
 
-function buildRandomDataForMonth(year, month){
+// Random dataset: vienam mēnesim, katrai dienai 0..100 noslodze
+function buildRandomLoadForMonth(year, month){
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const d = {};
+  const loads = {};
+
   for (let day = 1; day <= daysInMonth; day++){
-    const key = `${year}-${pad2(month+1)}-${pad2(day)}`;
-
-    // random, bet “ticamāk” lai nav vienmēr 0/100:
-    const a = Math.floor(10 + Math.random() * 90);
-    const b = Math.floor(10 + Math.random() * 90);
-    const c = Math.floor(10 + Math.random() * 90);
-
-    d[key] = { a, b, c };
+    // mazliet “smukāks” random: vairāk vidējo vērtību
+    const r = Math.random();
+    const val = Math.round(Math.pow(r, 0.65) * 100);
+    loads[day] = val;
   }
 
-  // Piemēram: pirmās 2 dienas “pelēkākas” (kā tavā bildē 1-2)
-  const k1 = `${year}-${pad2(month+1)}-01`;
-  const k2 = `${year}-${pad2(month+1)}-02`;
-  if (d[k1]) d[k1] = { a: 0, b: 0, c: 0 };
-  if (d[k2]) d[k2] = { a: 5, b: 10, c: 0 };
+  // kā bildē: pirmās dienas pelēcīgas (0..10)
+  if (loads[1] !== undefined) loads[1] = 0;
+  if (loads[2] !== undefined) loads[2] = 10;
 
-  return d;
+  return loads;
+}
+
+function classByLoad(p){
+  if (p <= 0) return "free";
+  if (p <= 50) return "half";
+  if (p <= 80) return "mid";
+  return "full";
 }
 
 function render(){
   titleEl.textContent = `${monthNamesLv[viewMonth]} ${viewYear}`;
   gridEl.innerHTML = "";
 
-  // ģenerējam data šim mēnesim
-  data = buildRandomDataForMonth(viewYear, viewMonth);
+  const loads = buildRandomLoadForMonth(viewYear, viewMonth);
 
   const firstDay = new Date(viewYear, viewMonth, 1);
-  // JS: 0=Sv ... 6=Se, mums tas sakrīt ar kolonnu secību (Sv pirmais)
+  // Sv=0..Se=6; mums kalendārā Sv ir pirmais -> der tieši
   const startWeekday = firstDay.getDay();
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
 
-  // tukšās šūnas pirms 1. datuma
+  // empty cells
   for (let i = 0; i < startWeekday; i++){
     const empty = document.createElement("div");
     empty.className = "day empty";
     gridEl.appendChild(empty);
   }
 
-  // dienas
   for (let day = 1; day <= daysInMonth; day++){
-    const key = `${viewYear}-${pad2(viewMonth+1)}-${pad2(day)}`;
-    const { a, b, c } = data[key];
+    const load = loads[day]; // 0..100
+    const cls = classByLoad(load);
 
     const cell = document.createElement("div");
     cell.className = "day";
 
-    // Tooltip
-    const tip = document.createElement("div");
-    tip.className = "tooltip";
-    tip.innerHTML = `
-      <div class="tip-title">${day}. ${monthNamesLv[viewMonth]} — noslodze</div>
-      <div class="tip-row">
-        <span class="tip-chip"><span class="chip-dot" style="background:#22c55e"></span>Inventārs A</span>
-        <strong>${a}%</strong>
-      </div>
-      <div class="tip-row">
-        <span class="tip-chip"><span class="chip-dot" style="background:#f59e0b"></span>Inventārs B</span>
-        <strong>${b}%</strong>
-      </div>
-      <div class="tip-row">
-        <span class="tip-chip"><span class="chip-dot" style="background:#ef4444"></span>Inventārs C</span>
-        <strong>${c}%</strong>
-      </div>
-    `;
+    const tooltip = document.createElement("div");
+    tooltip.className = "tooltip";
+    tooltip.innerHTML = `<b>${day}. ${monthNamesLv[viewMonth]}</b><div>Noslodze: <b>${load}%</b></div>`;
 
-    // dienas numurs
     const num = document.createElement("div");
     num.className = "day-num";
     num.textContent = day;
 
-    // 3 joslas
-    const bars = document.createElement("div");
-    bars.className = "bars";
+    const pill = document.createElement("div");
+    pill.className = "pill";
 
-    const pillA = makePill("inv-a-fill", a);
-    const pillB = makePill("inv-b-fill", b);
-    const pillC = makePill("inv-c-fill", c);
+    const fill = document.createElement("div");
+    fill.className = `fill ${cls}`;
+    fill.style.width = "0%";
+    pill.appendChild(fill);
 
-    bars.appendChild(pillA.wrap);
-    bars.appendChild(pillB.wrap);
-    bars.appendChild(pillC.wrap);
-
-    cell.appendChild(tip);
+    cell.appendChild(tooltip);
     cell.appendChild(num);
-    cell.appendChild(bars);
+    cell.appendChild(pill);
 
-    // animācija: sākumā “0”, pēc tam ielādējas
+    // animācija ielādei
     requestAnimationFrame(() => {
-      pillA.fill.style.width = `${a}%`;
-      pillB.fill.style.width = `${b}%`;
-      pillC.fill.style.width = `${c}%`;
+      fill.style.width = `${load}%`;
     });
 
-    // uz hover “pārspēlē” aizpildījumu (skaists efekts)
+    // hover: pārspēlē animāciju (skaisti)
     cell.addEventListener("mouseenter", () => {
-      pillA.fill.style.width = "0%";
-      pillB.fill.style.width = "0%";
-      pillC.fill.style.width = "0%";
+      fill.style.width = "0%";
       requestAnimationFrame(() => {
-        pillA.fill.style.width = `${a}%`;
-        pillB.fill.style.width = `${b}%`;
-        pillC.fill.style.width = `${c}%`;
+        fill.style.width = `${load}%`;
       });
     });
 
     gridEl.appendChild(cell);
   }
-}
-
-function makePill(fillClass, percent){
-  const wrap = document.createElement("div");
-  wrap.className = "pill";
-  const fill = document.createElement("div");
-  fill.className = `fill ${fillClass}`;
-  fill.style.width = "0%";
-  wrap.appendChild(fill);
-  return { wrap, fill, percent };
 }
 
 render();
