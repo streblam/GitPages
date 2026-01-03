@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kalendārs – Inventāra noslodze</title>
+  <title>Noslodzes kalendārs</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -32,21 +32,12 @@
     <div class="grid" id="calendarGrid"></div>
 
     <div class="legend">
-      <div class="legend-title">Leģenda (inventārs):</div>
-
-      <div class="legend-row">
-        <span class="legend-dot inv-a"></span>
-        <span class="legend-text">Inventārs A</span>
-
-        <span class="legend-dot inv-b"></span>
-        <span class="legend-text">Inventārs B</span>
-
-        <span class="legend-dot inv-c"></span>
-        <span class="legend-text">Inventārs C</span>
-      </div>
-
-      <div class="legend-note">
-        Katras dienas 3 joslas rāda, cik % inventāra ir aizņemts (0–100%).
+      <div class="legend-title">Leģenda:</div>
+      <div class="legend-grid">
+        <div class="legend-item"><span class="legend-box free"></span> Brīvs (0%)</div>
+        <div class="legend-item"><span class="legend-box half"></span> Līdz 50%</div>
+        <div class="legend-item"><span class="legend-box mid"></span> Līdz 80%</div>
+        <div class="legend-item"><span class="legend-box full"></span> Pilns (100%)</div>
       </div>
     </div>
   </div>
