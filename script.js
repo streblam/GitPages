@@ -5,8 +5,10 @@ const monthNamesLv = [
   "Jūlijs","Augusts","Septembris","Oktobris","Novembris","Decembris"
 ];
 
-let viewYear = 2026;
-let viewMonth = 0; // 0 = Janvāris
+// Sākam ar tekošo mēnesi (nevis hardcode 2026 Janvāris)
+const now = new Date();
+let viewYear = now.getFullYear();
+let viewMonth = now.getMonth(); // 0..11
 
 const gridEl = document.getElementById("calendarGrid");
 const titleEl = document.getElementById("monthTitle");
@@ -24,7 +26,6 @@ document.getElementById("nextBtn").addEventListener("click", () => {
 });
 
 // ---------- Helpers ----------
-function pad2(n){ return String(n).padStart(2,"0"); }
 function clamp(n, min=0, max=100){ return Math.max(min, Math.min(max, n)); }
 
 // “Smukāks” random noslodzei (0..100), ar tendenci uz vidu
@@ -33,7 +34,6 @@ function randomLoad(){
   return Math.round(Math.pow(r, 0.65) * 100);
 }
 
-// Mēs rādām PIEEJAMĪBU (%), nevis noslodzi
 // availability = 100 - load
 function buildRandomAvailabilityForMonth(year, month){
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -44,7 +44,7 @@ function buildRandomAvailabilityForMonth(year, month){
     availability[day] = 100 - load;
   }
 
-  // Demo: pirmās dienas “mazāk pieejamas / pelēkākas” ja gribi
+  // Demo
   if (availability[1] !== undefined) availability[1] = 10;
   if (availability[2] !== undefined) availability[2] = 25;
 
@@ -52,15 +52,13 @@ function buildRandomAvailabilityForMonth(year, month){
 }
 
 /**
- * Pakāpeniska krāsa pēc pieejamības (%):
- * 0% => sarkans, 100% => zaļš
- * Izmantojam HSL: 0 (red) -> 120 (green)
+ * 0% => sarkans, 100% => zaļš (HSL hue 0..120)
  */
 function colorByAvailability(pct){
   const p = clamp(pct) / 100;
-  const hue = 120 * p;               // 0..120
-  const sat = 85;                    // piesātinājums
-  const light = 48;                  // gaišums
+  const hue = 120 * p;
+  const sat = 85;
+  const light = 48;
   return `hsl(${hue} ${sat}% ${light}%)`;
 }
 
@@ -71,7 +69,7 @@ function render(){
   const availability = buildRandomAvailabilityForMonth(viewYear, viewMonth);
 
   const firstDay = new Date(viewYear, viewMonth, 1);
-  // Sv=0..Se=6 (mums kalendārā Sv ir pirmais)
+  // Sv=0..Se=6 (Sv ir pirmais)
   const startWeekday = firstDay.getDay();
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
 
@@ -84,11 +82,12 @@ function render(){
 
   // dienas
   for (let day = 1; day <= daysInMonth; day++){
-    const avail = availability[day]; // 0..100 (pieejamība)
+    const avail = availability[day]; // 0..100
     const load = 100 - avail;
 
     const cell = document.createElement("div");
     cell.className = "day";
+    cell.setAttribute("role", "gridcell");
 
     const tooltip = document.createElement("div");
     tooltip.className = "tooltip";
