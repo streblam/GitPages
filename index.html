@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Noslodzes kalendārs</title>
+  <title>Pieejamības kalendārs</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -21,7 +21,7 @@
   <div class="calendar-wrap">
     <div class="calendar-header">
       <button class="nav-btn" id="prevBtn" aria-label="Iepriekšējais mēnesis">‹</button>
-      <div class="month-title" id="monthTitle">Janvāris 2026</div>
+      <div class="month-title" id="monthTitle">—</div>
       <button class="nav-btn" id="nextBtn" aria-label="Nākamais mēnesis">›</button>
     </div>
 
@@ -33,11 +33,15 @@
 
     <div class="legend">
       <div class="legend-title">Leģenda:</div>
-      <div class="legend-grid">
-        <div class="legend-item"><span class="legend-box free"></span> Brīvs (0%)</div>
-        <div class="legend-item"><span class="legend-box half"></span> Līdz 50%</div>
-        <div class="legend-item"><span class="legend-box mid"></span> Līdz 80%</div>
-        <div class="legend-item"><span class="legend-box full"></span> Pilns (100%)</div>
+      <div class="legend-note">
+        Zaļš = daudz pieejams. Sarkans = maz pieejams. Krāsa mainās pakāpeniski pēc %.
+      </div>
+
+      <div class="legend-scale" aria-hidden="true">
+        <div class="scale-bar"></div>
+        <div class="scale-labels">
+          <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+        </div>
       </div>
     </div>
   </div>
