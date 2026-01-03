@@ -1,135 +1,102 @@
-// Pieejamības kalendārs: 1 stabiņš (pieejamība %) + pakāpeniska krāsa
+const CSV_PATH = "./rezervacijas.csv";
 
-const monthNamesLv = [
+// Inventārs
+const MAX_TOTAL = 24 + 8 + 4;
+
+const monthNames = [
   "Janvāris","Februāris","Marts","Aprīlis","Maijs","Jūnijs",
   "Jūlijs","Augusts","Septembris","Oktobris","Novembris","Decembris"
 ];
 
-// Sākam ar tekošo mēnesi (nevis hardcode 2026 Janvāris)
-const now = new Date();
-let viewYear = now.getFullYear();
-let viewMonth = now.getMonth(); // 0..11
+const grid = document.getElementById("calendarGrid");
+const title = document.getElementById("monthTitle");
 
-const gridEl = document.getElementById("calendarGrid");
-const titleEl = document.getElementById("monthTitle");
+let date = new Date();
+let year = date.getFullYear();
+let month = date.getMonth();
 
-document.getElementById("prevBtn").addEventListener("click", () => {
-  viewMonth--;
-  if (viewMonth < 0) { viewMonth = 11; viewYear--; }
-  render();
-});
+document.getElementById("prevBtn").onclick = async () => {
+  month--; if (month < 0) { month = 11; year--; }
+  await render();
+};
+document.getElementById("nextBtn").onclick = async () => {
+  month++; if (month > 11) { month = 0; year++; }
+  await render();
+};
 
-document.getElementById("nextBtn").addEventListener("click", () => {
-  viewMonth++;
-  if (viewMonth > 11) { viewMonth = 0; viewYear++; }
-  render();
-});
-
-// ---------- Helpers ----------
-function clamp(n, min=0, max=100){ return Math.max(min, Math.min(max, n)); }
-
-// “Smukāks” random noslodzei (0..100), ar tendenci uz vidu
-function randomLoad(){
-  const r = Math.random();
-  return Math.round(Math.pow(r, 0.65) * 100);
+function parseDate(s) {
+  const [y,m,d] = s.split(".").map(Number);
+  return new Date(y, m-1, d);
 }
 
-// availability = 100 - load
-function buildRandomAvailabilityForMonth(year, month){
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const availability = {};
+function color(avail) {
+  return `hsl(${avail * 1.2}, 85%, 45%)`;
+}
 
-  for (let day = 1; day <= daysInMonth; day++){
-    const load = randomLoad();
-    availability[day] = 100 - load;
+async function loadCSV() {
+  const res = await fetch(CSV_PATH);
+  const text = await res.text();
+  const rows = text.trim().split("\n").map(r => r.split(","));
+
+  const h = rows.shift();
+  const idx = name => h.indexOf(name);
+
+  const used = {};
+
+  rows.forEach(r => {
+    if (r[idx("Statuss")] !== "APSTIPRINĀTS") return;
+
+    const start = parseDate(r[idx("Sākuma datums")]);
+    const end   = parseDate(r[idx("Beigu datums")]);
+
+    const units =
+      Number(r[idx("VISTA")]) +
+      Number(r[idx("KANOE")]) +
+      Number(r[idx("SUP")]);
+
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+      const key = d.toISOString().slice(0,10);
+      used[key] = (used[key] || 0) + units;
+    }
+  });
+
+  const load = {};
+  for (const k in used) {
+    load[k] = Math.round(Math.min(used[k], MAX_TOTAL) / MAX_TOTAL * 100);
   }
-
-  // Demo
-  if (availability[1] !== undefined) availability[1] = 10;
-  if (availability[2] !== undefined) availability[2] = 25;
-
-  return availability;
+  return load;
 }
 
-/**
- * 0% => sarkans, 100% => zaļš (HSL hue 0..120)
- */
-function colorByAvailability(pct){
-  const p = clamp(pct) / 100;
-  const hue = 120 * p;
-  const sat = 85;
-  const light = 48;
-  return `hsl(${hue} ${sat}% ${light}%)`;
-}
+let cache = null;
 
-function render(){
-  titleEl.textContent = `${monthNamesLv[viewMonth]} ${viewYear}`;
-  gridEl.innerHTML = "";
+async function render() {
+  if (!cache) cache = await loadCSV();
 
-  const availability = buildRandomAvailabilityForMonth(viewYear, viewMonth);
+  title.textContent = `${monthNames[month]} ${year}`;
+  grid.innerHTML = "";
 
-  const firstDay = new Date(viewYear, viewMonth, 1);
-  // Sv=0..Se=6 (Sv ir pirmais)
-  const startWeekday = firstDay.getDay();
-  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const first = new Date(year, month, 1).getDay();
+  const days = new Date(year, month+1, 0).getDate();
 
-  // tukšās šūnas
-  for (let i = 0; i < startWeekday; i++){
-    const empty = document.createElement("div");
-    empty.className = "day empty";
-    gridEl.appendChild(empty);
-  }
+  for (let i=0;i<first;i++) grid.innerHTML += `<div class="day empty"></div>`;
 
-  // dienas
-  for (let day = 1; day <= daysInMonth; day++){
-    const avail = availability[day]; // 0..100
-    const load = 100 - avail;
+  for (let d=1; d<=days; d++) {
+    const key = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const load = cache[key] || 0;
+    const avail = 100 - load;
 
     const cell = document.createElement("div");
     cell.className = "day";
-    cell.setAttribute("role", "gridcell");
-
-    const tooltip = document.createElement("div");
-    tooltip.className = "tooltip";
-    tooltip.innerHTML = `
-      <b>${day}. ${monthNamesLv[viewMonth]}</b>
-      <div>Pieejams: <b>${avail}%</b></div>
-      <div>Noslodze: <b>${load}%</b></div>
+    cell.innerHTML = `
+      <div class="day-num">${d}</div>
+      <div class="vbar"><div class="vfill"></div></div>
     `;
 
-    const num = document.createElement("div");
-    num.className = "day-num";
-    num.textContent = day;
+    const fill = cell.querySelector(".vfill");
+    fill.style.background = color(avail);
+    setTimeout(() => fill.style.height = avail + "%", 20);
 
-    const vbar = document.createElement("div");
-    vbar.className = "vbar";
-
-    const vfill = document.createElement("div");
-    vfill.className = "vfill";
-    vfill.style.height = "0%";
-    vfill.style.backgroundColor = colorByAvailability(avail);
-
-    vbar.appendChild(vfill);
-
-    cell.appendChild(tooltip);
-    cell.appendChild(num);
-    cell.appendChild(vbar);
-
-    // ielādes animācija
-    requestAnimationFrame(() => {
-      vfill.style.height = `${avail}%`;
-    });
-
-    // hover animācija (pārspēlē)
-    cell.addEventListener("mouseenter", () => {
-      vfill.style.height = "0%";
-      vfill.style.backgroundColor = colorByAvailability(avail);
-      requestAnimationFrame(() => {
-        vfill.style.height = `${avail}%`;
-      });
-    });
-
-    gridEl.appendChild(cell);
+    grid.appendChild(cell);
   }
 }
 
