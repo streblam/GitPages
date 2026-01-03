@@ -1,55 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="lv">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Pieejamības kalendārs</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <nav class="navbar">
+    <ul>
+      <li><a href="#">Sākums</a></li>
+      <li><a href="#">Par mani</a></li>
+      <li><a href="#">Karte</a></li>
+      <li><a href="#">Kontakti</a></li>
+    </ul>
+  </nav>
 
-<nav class="navbar">
-  <ul>
-    <li><a href="#">Sākums</a></li>
-    <li><a href="#">Par mani</a></li>
-    <li><a href="#">Karte</a></li>
-    <li><a href="#">Kontakti</a></li>
-  </ul>
-</nav>
+  <main class="hero">
+    <section class="shell">
+      <div class="card main">
+        <header class="head">
+          <button class="navbtn" id="prevBtn" aria-label="Iepriekšējais mēnesis">‹</button>
+          <div class="title" id="monthTitle">—</div>
+          <button class="navbtn" id="nextBtn" aria-label="Nākamais mēnesis">›</button>
+        </header>
 
-<div class="hero">
-  <div class="calendar-shell">
+        <div class="weekdays">
+          <div>Sv</div><div>Pr</div><div>Ot</div><div>Tr</div><div>Ce</div><div>Pk</div><div>Se</div>
+        </div>
 
-    <div class="calendar-wrap calendar-main">
-      <div class="calendar-header">
-        <button class="nav-btn" id="prevBtn" aria-label="Iepriekšējais mēnesis">‹</button>
-        <div class="month-title" id="monthTitle">—</div>
-        <button class="nav-btn" id="nextBtn" aria-label="Nākamais mēnesis">›</button>
+        <div class="grid" id="gridMain"></div>
+
+        <footer class="legend">
+          <div class="legend-row">
+            <b>Leģenda:</b>
+            <span>Sarkans = noslogots, Zaļš = pieejams</span>
+          </div>
+          <div class="scale"></div>
+        </footer>
       </div>
 
-      <div class="weekdays">
-        <div>Sv</div><div>Pr</div><div>Ot</div><div>Tr</div><div>Ce</div><div>Pk</div><div>Se</div>
+      <div class="card mini" aria-label="Nākamais mēnesis">
+        <header class="head head-mini">
+          <div class="title title-mini" id="monthTitleMini">—</div>
+        </header>
+
+        <div class="weekdays weekdays-mini">
+          <div>Sv</div><div>Pr</div><div>Ot</div><div>Tr</div><div>Ce</div><div>Pk</div><div>Se</div>
+        </div>
+
+        <div class="grid grid-mini" id="gridMini"></div>
       </div>
+    </section>
+  </main>
 
-      <div class="grid" id="calendarGrid"></div>
-    </div>
-
-    <div class="calendar-wrap calendar-mini" aria-label="Nākamais mēnesis">
-      <div class="calendar-header mini-header">
-        <div class="month-title mini-title" id="monthTitleMini">—</div>
-      </div>
-
-      <div class="weekdays mini-weekdays">
-        <div>Sv</div><div>Pr</div><div>Ot</div><div>Tr</div><div>Ce</div><div>Pk</div><div>Se</div>
-      </div>
-
-      <div class="grid mini-grid" id="calendarGridMini"></div>
-    </div>
-
-  </div>
-</div>
-
-<script src="script.js?v=20260104"></script>
-
+  <!-- Cache-buster (Safari) -->
+  <script src="script.js?v=20260104"></script>
 </body>
 </html>
