@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Pieejamības kalendārs</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="assets/css/calendar.css" />
+</head>
+<body>
+  <div class="app app-wide">
+
+    <header class="topnav">
+      <div class="brand">Mana lapa</div>
+      <nav class="navlinks">
+        <a href="index.html">Sākums</a>
+        <a class="active" href="calendar.html">Kalendārs</a>
+        <a href="map.html">Karte</a>
+        <a href="booking.html">Rezervēt</a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <section class="shell">
+        <div class="card cal main">
+          <header class="head">
+            <button class="navbtn" id="prevBtn" aria-label="Iepriekšējais mēnesis">‹</button>
+            <div class="title" id="monthTitle">—</div>
+            <button class="navbtn" id="nextBtn" aria-label="Nākamais mēnesis">›</button>
+          </header>
+
+          <div class="weekdays">
+            <div>Sv</div><div>Pr</div><div>Ot</div><div>Tr</div><div>Ce</div><div>Pk</div><div>Se</div>
+          </div>
+
+          <div class="grid" id="gridMain"></div>
+
+          <footer class="legend">
+            <div class="legend-row">
+              <b>Leģenda:</b>
+              <span>Sarkans = noslogots, Zaļš = pieejams</span>
+            </div>
+            <div class="scale"></div>
+          </footer>
+        </div>
+
+        <div class="card cal mini" aria-label="Nākamais mēnesis">
+          <header class="head head-mini">
+            <div class="title title-mini" id="monthTitleMini">—</div>
+          </header>
+
+          <div class="weekdays weekdays-mini">
+            <div>Sv</div><div>Pr</div><div>Ot</div><div>Tr</div><div>Ce</div><div>Pk</div><div>Se</div>
+          </div>
+
+          <div class="grid grid-mini" id="gridMini"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026</span>
+      <span class="muted">Kalendārs no CSV</span>
+    </footer>
+
+  </div>
+
+  <script src="assets/js/calendar.js?v=20260104"></script>
+</body>
+</html>

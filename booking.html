@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rezervēt</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <div class="app">
+
+    <header class="topnav">
+      <div class="brand">Mana lapa</div>
+      <nav class="navlinks">
+        <a href="index.html">Sākums</a>
+        <a href="calendar.html">Kalendārs</a>
+        <a href="map.html">Karte</a>
+        <a class="active" href="booking.html">Rezervēt</a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <div class="grid2">
+        <section class="card">
+          <h2 id="formTitle">Jauna rezervācija</h2>
+
+          <form id="form" class="form">
+            <input type="hidden" id="editId" />
+
+            <div class="two">
+              <div class="field">
+                <label>Vārds</label>
+                <input id="name" placeholder="Vārds Uzvārds" required />
+              </div>
+
+              <div class="field">
+                <label>E-pasts</label>
+                <input id="email" placeholder="name@example.com" type="email" required />
+              </div>
+            </div>
+
+            <div class="three">
+              <div class="field">
+                <label>Datums</label>
+                <input id="date" type="date" required />
+              </div>
+
+              <div class="field">
+                <label>Laiks</label>
+                <input id="time" type="time" required />
+              </div>
+
+              <div class="field">
+                <label>Personas</label>
+                <input id="party" type="number" min="1" value="1" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Piezīmes</label>
+              <textarea id="notes" rows="3" placeholder="(neobligāti)"></textarea>
+            </div>
+
+            <div class="actions">
+              <button class="btn primary" type="submit" id="saveBtn">Saglabāt</button>
+              <button class="btn ghost" type="button" id="cancelEdit" hidden>Atcelt labošanu</button>
+            </div>
+
+            <div class="error" id="error"></div>
+
+            <p class="hint" style="margin-top:10px;">
+              Šis ir “front-end only” prototips (glabājas pārlūkā). Ja gribi īstu sistēmu uz GitHub Pages,
+              varam pieslēgt Supabase/Firebase vai ārēju API.
+            </p>
+          </form>
+        </section>
+
+        <section class="card" id="list">
+          <div class="listHead">
+            <h2>Rezervācijas</h2>
+            <span class="pill" id="count">0</span>
+          </div>
+
+          <div class="tableWrap">
+            <table id="tbl">
+              <thead>
+                <tr>
+                  <th>Datums</th>
+                  <th>Laiks</th>
+                  <th>Vārds</th>
+                  <th>E-pasts</th>
+                  <th>Pers.</th>
+                  <th class="right">Darbības</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026</span>
+      <span class="muted">Rezervācijas (demo)</span>
+    </footer>
+
+  </div>
+
+  <script src="assets/js/booking.js"></script>
+</body>
+</html>

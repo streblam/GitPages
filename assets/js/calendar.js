@@ -1,12 +1,10 @@
-// ===== CONFIG =====
-const CSV_URL = "./rezervacijas.csv?v=20260104"; // CSV tajā pašā mapē
-const MAX_TOTAL = 24 + 8 + 4; // 36 vienības
+const CSV_URL = "./data/rezervacijas.csv?v=20260104";
+const MAX_TOTAL = 24 + 8 + 4;
 
 const monthNamesLv = [
   "Janvāris","Februāris","Marts","Aprīlis","Maijs","Jūnijs",
   "Jūlijs","Augusts","Septembris","Oktobris","Novembris","Decembris"
 ];
-
 
 const gridMain = document.getElementById("gridMain");
 const gridMini = document.getElementById("gridMini");
@@ -17,9 +15,27 @@ const now = new Date();
 let viewYear = now.getFullYear();
 let viewMonth = now.getMonth();
 
+// --- min mēnesis = tekošais mēnesis (pagātni nerādām) ---
+const today = new Date();
+today.setHours(12, 0, 0, 0); // stabils pret DST
+const minYear = today.getFullYear();
+const minMonth = today.getMonth();
+
+function isBeforeMinMonth(y, m0){
+  return y < minYear || (y === minYear && m0 < minMonth);
+}
+
 document.getElementById("prevBtn").addEventListener("click", async () => {
-  viewMonth--;
-  if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+  // mēģinam pāriet uz iepriekšējo mēnesi
+  let y = viewYear;
+  let m = viewMonth - 1;
+  if (m < 0) { m = 11; y--; }
+
+  // ja tas ir pirms tekošā mēneša -> neko nedaram
+  if (isBeforeMinMonth(y, m)) return;
+
+  viewYear = y;
+  viewMonth = m;
   await renderAll();
 });
 
@@ -29,14 +45,10 @@ document.getElementById("nextBtn").addEventListener("click", async () => {
   await renderAll();
 });
 
-// ---- helpers ----
 function clamp(n, min = 0, max = 100){ return Math.max(min, Math.min(max, n)); }
-
 function ymd(y, m0, d){
   return `${y}-${String(m0+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
 }
-
-// 0% pieejams => sarkans, 100% => zaļš
 function colorByAvailability(availPct){
   const p = clamp(availPct) / 100;
   const hue = 120 * p;
@@ -49,14 +61,13 @@ function parseLvDateLocalNoon(v){
   if (parts.length < 3) return null;
 
   const y = Number(parts[0]);
-  const d = Number(parts[1]); // DIENA
-  const m = Number(parts[2]); // MĒNESIS
+  const d = Number(parts[1]);
+  const m = Number(parts[2]);
 
   if (![y, m, d].every(Number.isFinite)) return null;
   if (m < 1 || m > 12) return null;
   if (d < 1 || d > 31) return null;
 
-  // 12:00 vietējā laikā, lai DST nekad nenobīda dienu
   return new Date(y, m - 1, d, 12, 0, 0);
 }
 
@@ -65,7 +76,6 @@ function toInt(v){
   return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
 }
 
-// Robusts CSV parseris ar pēdiņām (ja tekstos ir komati)
 function parseCSV(text){
   const rows = [];
   let row = [];
@@ -101,7 +111,6 @@ function parseCSV(text){
   return rows;
 }
 
-// YYYY-MM-DD -> load%
 let loadCache = null;
 
 async function getLoadMap(){
@@ -148,7 +157,6 @@ async function getLoadMap(){
     const units = toInt(row[iVista]) + toInt(row[iKanoe]) + toInt(row[iSup]);
     if (units <= 0) continue;
 
-    // ieskaitot beigu datumu
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       const key = ymd(d.getFullYear(), d.getMonth(), d.getDate());
       usedByDay[key] = (usedByDay[key] || 0) + units;
@@ -165,12 +173,11 @@ async function getLoadMap(){
   return loadCache;
 }
 
-// Vienmēr 42 šūnas (6 nedēļas) => izmērs nemainās
 function renderMonth(targetGrid, year, month0, loadMap, withTooltip){
   targetGrid.innerHTML = "";
 
   const first = new Date(year, month0, 1, 12, 0, 0);
-  const startWeekday = first.getDay(); // Sv=0..Se=6
+  const startWeekday = first.getDay();
   const daysInMonth = new Date(year, month0 + 1, 0).getDate();
 
   for (let i = 0; i < 42; i++){
@@ -184,13 +191,18 @@ function renderMonth(targetGrid, year, month0, loadMap, withTooltip){
     }
 
     const key = ymd(year, month0, dayNum);
+    const cellDate = new Date(year, month0, dayNum, 12, 0, 0);
+    const isPastDay = cellDate < today;
+
     const load = key in loadMap ? clamp(loadMap[key]) : 0;
     const avail = 100 - load;
 
     const cell = document.createElement("div");
     cell.className = "day";
+    if (isPastDay) cell.classList.add("past");
 
-    if (withTooltip){
+    // tooltip tikai nākotnes/šodienas dienām
+    if (withTooltip && !isPastDay){
       const tip = document.createElement("div");
       tip.className = "tip";
       tip.innerHTML = `
@@ -229,11 +241,12 @@ async function renderAll(){
   renderMonth(gridMain, viewYear, viewMonth, loadMap, true);
 
   const next = new Date(viewYear, viewMonth + 1, 1, 12, 0, 0);
-  const ny = next.getFullYear();
-  const nm = next.getMonth();
+  titleMini.textContent = `${monthNamesLv[next.getMonth()]} ${next.getFullYear()}`;
+  renderMonth(gridMini, next.getFullYear(), next.getMonth(), loadMap, false);
 
-  titleMini.textContent = `${monthNamesLv[nm]} ${ny}`;
-  renderMonth(gridMini, ny, nm, loadMap, false);
+  // prev poga disabled, ja esam tekošajā mēnesī
+  const prevBtn = document.getElementById("prevBtn");
+  prevBtn.disabled = (viewYear === minYear && viewMonth === minMonth);
 }
 
 renderAll().catch(err => {

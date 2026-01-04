@@ -1,60 +1,84 @@
 <!doctype html>
 <html lang="lv">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Pieejamības kalendārs</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sākums</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
-  <nav class="navbar">
-    <ul>
-      <li><a href="#">Sākums</a></li>
-      <li><a href="#">Par mani</a></li>
-      <li><a href="#">Karte</a></li>
-      <li><a href="#">Kontakti</a></li>
-    </ul>
-  </nav>
+  <div class="app">
 
-  <main class="hero">
-    <section class="shell">
-      <div class="card main">
-        <header class="head">
-          <button class="navbtn" id="prevBtn" aria-label="Iepriekšējais mēnesis">‹</button>
-          <div class="title" id="monthTitle">—</div>
-          <button class="navbtn" id="nextBtn" aria-label="Nākamais mēnesis">›</button>
-        </header>
+    <header class="topnav">
+      <div class="brand">Mana lapa</div>
+      <nav class="navlinks">
+        <a class="active" href="index.html">Sākums</a>
+        <a href="calendar.html">Kalendārs</a>
+        <a href="map.html">Karte</a>
+        <a href="booking.html">Rezervēt</a>
+      </nav>
+    </header>
 
-        <div class="weekdays">
-          <div>Sv</div><div>Pr</div><div>Ot</div><div>Tr</div><div>Ce</div><div>Pk</div><div>Se</div>
-        </div>
+    <main class="hero">
+      <div class="heroGrid">
+        <div class="heroText">
+          <h1>Viss vienā vietā: kalendārs, karte un rezervācijas.</h1>
+          <p class="sub">
+            GitHub Pages mājaslapa tumšajā stilā (kā tava rezervāciju sistēma), ar sakārtotu struktūru un tīru dizainu.
+          </p>
 
-        <div class="grid" id="gridMain"></div>
-
-        <footer class="legend">
-          <div class="legend-row">
-            <b>Leģenda:</b>
-            <span>Sarkans = noslogots, Zaļš = pieejams</span>
+          <div class="heroBtns">
+            <a class="btn primary" href="booking.html">Rezervēt</a>
+            <a class="btn ghost" href="calendar.html">Skatīt pieejamību</a>
+            <a class="btn ghost" href="map.html">Atvērt karti</a>
           </div>
-          <div class="scale"></div>
-        </footer>
-      </div>
 
-      <div class="card mini" aria-label="Nākamais mēnesis">
-        <header class="head head-mini">
-          <div class="title title-mini" id="monthTitleMini">—</div>
-        </header>
-
-        <div class="weekdays weekdays-mini">
-          <div>Sv</div><div>Pr</div><div>Ot</div><div>Tr</div><div>Ce</div><div>Pk</div><div>Se</div>
+          <div class="featureRow">
+            <div class="feature">
+              <div class="dot"></div>
+              <div>
+                <div class="ft">Kalendārs</div>
+                <div class="fm">CSV → noslodze/pieejamība</div>
+              </div>
+            </div>
+            <div class="feature">
+              <div class="dot"></div>
+              <div>
+                <div class="ft">Karte</div>
+                <div class="fm">GeoJSON → maršruti</div>
+              </div>
+            </div>
+            <div class="feature">
+              <div class="dot"></div>
+              <div>
+                <div class="ft">Rezervācijas</div>
+                <div class="fm">Front-end forma (vēlāk var pieslēgt DB)</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="grid grid-mini" id="gridMini"></div>
+        <div class="heroCard">
+          <div class="cardMini">
+            <div class="miniTitle">Ātri</div>
+            <div class="miniValue">Sakārtots • Vienots • Skaists</div>
+            <div class="miniLine"></div>
+            <div class="miniList">
+              <div class="miniItem"><span>✅</span> Vienota navigācija</div>
+              <div class="miniItem"><span>✅</span> Atsevišķi CSS/JS</div>
+              <div class="miniItem"><span>✅</span> Strādā lokāli + GitHub Pages</div>
+            </div>
+            <a class="btn primary full" href="calendar.html">Atvērt kalendāru</a>
+          </div>
+        </div>
       </div>
-    </section>
-  </main>
+    </main>
 
-  <!-- Cache-buster (Safari) -->
-  <script src="script.js?v=20260104"></script>
+    <footer class="footer">
+      <span>© 2026</span>
+      <span class="muted">GitHub Pages • HTML/CSS/JS</span>
+    </footer>
+
+  </div>
 </body>
 </html>

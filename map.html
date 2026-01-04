@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Karte</title>
+
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="assets/css/map.css" />
+</head>
+<body>
+  <div class="app app-wide">
+
+    <header class="topnav">
+      <div class="brand">Mana lapa</div>
+      <nav class="navlinks">
+        <a href="index.html">Sākums</a>
+        <a href="calendar.html">Kalendārs</a>
+        <a class="active" href="map.html">Karte</a>
+        <a href="booking.html">Rezervēt</a>
+      </nav>
+    </header>
+
+    <main class="map-layout">
+      <aside class="sidebar card">
+        <h2>Maršruti</h2>
+        <ul id="routeList">
+          <li data-routes="robeza">Robeža</li>
+          <li data-routes="V390">V390</li>
+          <li data-routes="P40">P40</li>
+          <li data-routes="virgulica">Virgulīca</li>
+          <li data-routes="guldupe">Guldupe (4h)</li>
+          <li data-routes="tilts">Tilts</li>
+          <li data-routes="baze">Bāze</li>
+          <li data-routes="guldupe,tilts">Guldupe + Tilts</li>
+          <li data-routes="tilts,baze">Tilts + Bāze</li>
+          <li data-routes="guldupe,tilts,baze">Visi kopā</li>
+        </ul>
+
+        <div class="hint" style="margin-top:12px;">
+          Padoms: uzliec Mapbox token failā <code>assets/js/config.js</code>.
+        </div>
+      </aside>
+
+      <section class="mapwrap">
+        <div id="map"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026</span>
+      <span class="muted">Mapbox • GeoJSON</span>
+    </footer>
+
+  </div>
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/routes.js"></script>
+  <script src="assets/js/map.js"></script>
+</body>
+</html>
