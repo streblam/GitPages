@@ -1,20 +1,15 @@
-const KEY = "demo_reservations_v1";
+import { toInt } from "./util.js";
 
-const form = document.getElementById("form");
-const errBox = document.getElementById("error");
-const tbody = document.querySelector("#tbl tbody");
-const count = document.getElementById("count");
+const KEY = "bookings_v2";
 
-const editId = document.getElementById("editId");
-const nameEl = document.getElementById("name");
-const emailEl = document.getElementById("email");
-const dateEl = document.getElementById("date");
-const timeEl = document.getElementById("time");
-const partyEl = document.getElementById("party");
-const notesEl = document.getElementById("notes");
+function qs(name){
+  return document.getElementById(name);
+}
 
-const cancelBtn = document.getElementById("cancelEdit");
-const formTitle = document.getElementById("formTitle");
+function showError(box, msg){
+  box.style.display = msg ? "block" : "none";
+  box.textContent = msg || "";
+}
 
 function loadAll(){
   try { return JSON.parse(localStorage.getItem(KEY) || "[]"); }
@@ -23,127 +18,120 @@ function loadAll(){
 function saveAll(list){
   localStorage.setItem(KEY, JSON.stringify(list));
 }
-function showError(msg){
-  errBox.style.display = msg ? "block" : "none";
-  errBox.textContent = msg || "";
-}
-function uid(){
-  return crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random();
-}
 
-function validate(){
-  if (!nameEl.value.trim()) return "Vārds ir obligāts.";
-  if (!emailEl.value.trim()) return "E-pasts ir obligāts.";
-  if (!dateEl.value) return "Datums ir obligāts.";
-  if (!timeEl.value) return "Laiks ir obligāts.";
-  const p = Number(partyEl.value);
-  if (!Number.isFinite(p) || p <= 0) return "Personu skaitam jābūt > 0.";
-  return "";
-}
-
-function render(){
-  const all = loadAll()
-    .slice()
-    .sort((a,b) => (a.date + a.time).localeCompare(b.date + b.time));
-
-  count.textContent = String(all.length);
-  tbody.innerHTML = "";
-
-  for (const r of all){
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${r.date}</td>
-      <td>${r.time}</td>
-      <td>${escapeHtml(r.name)}</td>
-      <td>${escapeHtml(r.email)}</td>
-      <td>${r.party}</td>
-      <td class="right">
-        <button class="btn ghost" data-edit="${r.id}">Labot</button>
-        <button class="btn danger" data-del="${r.id}">Dzēst</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  }
-}
-
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[c]));
-}
-
-function resetForm(){
-  editId.value = "";
-  formTitle.textContent = "Jauna rezervācija";
-  cancelBtn.hidden = true;
-  form.reset();
-  partyEl.value = "1";
-  showError("");
-}
-
-cancelBtn.addEventListener("click", resetForm);
-
-tbody.addEventListener("click", (e) => {
-  const btn = e.target.closest("button");
-  if (!btn) return;
-
-  const all = loadAll();
-  const del = btn.getAttribute("data-del");
-  const edit = btn.getAttribute("data-edit");
-
-  if (del){
-    saveAll(all.filter(x => x.id !== del));
-    render();
-    if (editId.value === del) resetForm();
-  }
-
-  if (edit){
-    const r = all.find(x => x.id === edit);
-    if (!r) return;
-    editId.value = r.id;
-    nameEl.value = r.name;
-    emailEl.value = r.email;
-    dateEl.value = r.date;
-    timeEl.value = r.time;
-    partyEl.value = r.party;
-    notesEl.value = r.notes || "";
-    formTitle.textContent = "Labot rezervāciju";
-    cancelBtn.hidden = false;
-    showError("");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-});
-
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const msg = validate();
-  if (msg) return showError(msg);
-
-  const all = loadAll();
-  const id = editId.value || uid();
-
-  // clash: date+time unique
-  const clash = all.some(x => x.id !== id && x.date === dateEl.value && x.time === timeEl.value);
-  if (clash) return showError("Šis laiks jau ir aizņemts.");
-
-  const item = {
-    id,
-    name: nameEl.value.trim(),
-    email: emailEl.value.trim(),
-    date: dateEl.value,
-    time: timeEl.value,
-    party: Number(partyEl.value),
-    notes: notesEl.value.trim()
+function getParams(){
+  const p = new URLSearchParams(location.search);
+  return {
+    date: p.get("date") || "",
+    name: p.get("name") || "",
+    email: p.get("email") || "",
+    time: p.get("time") || "",
+    party: p.get("party") || ""
   };
+}
 
-  const idx = all.findIndex(x => x.id === id);
-  if (idx >= 0) all[idx] = item;
-  else all.push(item);
+export function initBooking(){
+  const form = qs("bookingForm");
+  if (!form) return;
 
-  saveAll(all);
-  render();
-  resetForm();
-});
+  const errBox = qs("error");
+  const pill = qs("pickedDatePill");
 
-render();
-resetForm();
+  const emailEl = qs("email");
+  const nameEl = qs("fullName");
+  const phoneEl = qs("phone");
+
+  const vistaEl = qs("vista");
+  const kanoeEl = qs("kanoe");
+  const supEl = qs("sup");
+  const invHint = qs("invHint");
+
+  const pickupEl = qs("pickup");
+  const returnEl = qs("returnDate");
+
+  const riverEl = qs("river");
+  const riverOtherWrap = qs("riverOtherWrap");
+  const riverOtherEl = qs("riverOther");
+  const notesEl = qs("notes");
+
+  const params = getParams();
+
+  // Defaults from URL
+  if (params.name) nameEl.value = params.name;
+  if (params.email) emailEl.value = params.email;
+
+  if (params.date){
+    pill.textContent = params.date;
+    pickupEl.value = `${params.date}T${params.time || "10:00"}`;
+    returnEl.value = params.date;
+  } else {
+    pill.textContent = "Izvēlies datumu kalendārā";
+  }
+
+  function validate(){
+    if (!emailEl.value.trim()) return "Email ir obligāts.";
+    if (!nameEl.value.trim()) return "Vārds, Uzvārds ir obligāts.";
+    if (!phoneEl.value.trim()) return "Tālruņa numurs ir obligāts.";
+
+    const vista = toInt(vistaEl.value);
+    const kanoe = toInt(kanoeEl.value);
+    const sup = toInt(supEl.value);
+    if (vista + kanoe + sup <= 0) return "Izvēlies vismaz 1 inventāra vienību.";
+
+    if (!pickupEl.value) return "Saņemšanas laiks ir obligāts.";
+    if (!returnEl.value) return "Nodošanas datums ir obligāts.";
+
+    if (!riverEl.value) return "Izvēlētā upe ir obligāta.";
+    if (riverEl.value === "Other" && !riverOtherEl.value.trim()) return "Lūdzu, norādi citu upi.";
+
+    const pickupDate = pickupEl.value.slice(0,10);
+    if (returnEl.value < pickupDate) return "Nodošanas datums nevar būt pirms saņemšanas datuma.";
+
+    return "";
+  }
+
+  riverEl.addEventListener("change", () => {
+    const isOther = riverEl.value === "Other";
+    riverOtherWrap.style.display = isOther ? "block" : "none";
+    if (!isOther) riverOtherEl.value = "";
+  });
+
+  [vistaEl, kanoeEl, supEl].forEach(el => {
+    el.addEventListener("input", () => {
+      const sum = toInt(vistaEl.value) + toInt(kanoeEl.value) + toInt(supEl.value);
+      invHint.textContent = sum > 0 ? `Kopā: ${sum}` : "Izvēlies vismaz 1 vienību.";
+    });
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    showError(errBox, "");
+
+    const msg = validate();
+    if (msg) return showError(errBox, msg);
+
+    const booking = {
+      id: (crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()),
+      email: emailEl.value.trim(),
+      fullName: nameEl.value.trim(),
+      phone: phoneEl.value.trim(),
+      inventory: {
+        vista: toInt(vistaEl.value),
+        kanoe: toInt(kanoeEl.value),
+        sup: toInt(supEl.value)
+      },
+      pickup: pickupEl.value,
+      returnDate: returnEl.value,
+      river: riverEl.value === "Other" ? riverOtherEl.value.trim() : riverEl.value,
+      notes: notesEl.value.trim(),
+      createdAt: new Date().toISOString()
+    };
+
+    const all = loadAll();
+    all.push(booking);
+    saveAll(all);
+
+    alert("Rezervācija saglabāta (demo: LocalStorage).");
+    window.location.href = `calendar.html`;
+  });
+}

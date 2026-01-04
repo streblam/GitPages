@@ -1,3 +1,34 @@
+
+window.ROUTES_GEOJSON = window.ROUTES_GEOJSON || {};
+
+window.ROUTES_GEOJSON.pededze = {
+  "type":"FeatureCollection",
+  "features":[
+    {"type":"Feature","properties":{"name":"Pededze"},"geometry":{"type":"LineString","coordinates":[
+      [27.01,57.22],[27.04,57.24],[27.08,57.25],[27.12,57.24]
+    ]}}
+  ]
+};
+
+window.ROUTES_GEOJSON.aiviekste = {
+  "type":"FeatureCollection",
+  "features":[
+    {"type":"Feature","properties":{"name":"Aiviekste"},"geometry":{"type":"LineString","coordinates":[
+      [26.92,56.78],[26.97,56.80],[27.02,56.83],[27.06,56.86]
+    ]}}
+  ]
+};
+
+window.ROUTES_GEOJSON.gauja = {
+  "type":"FeatureCollection",
+  "features":[
+    {"type":"Feature","properties":{"name":"Gauja"},"geometry":{"type":"LineString","coordinates":[
+      [25.45,57.30],[25.55,57.32],[25.66,57.35],[25.78,57.38]
+    ]}}
+  ]
+};
+
+
 const guldupe =
     {"type":"FeatureCollection","features":[
             {"type":"Feature","properties":

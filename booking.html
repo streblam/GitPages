@@ -4,13 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Rezervēt</title>
-  <link rel="stylesheet" href="assets/css/styles.css" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/booking.css" />
+
+  <!-- Mapbox CSS tikai šeit (booking lapā) -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet">
 </head>
 <body>
-  <div class="app">
+  <div class="app app-wide">
 
     <header class="topnav">
-      <div class="brand">Mana lapa</div>
+      <div class="brand"><span class="logo"></span> Mana lapa</div>
       <nav class="navlinks">
         <a href="index.html">Sākums</a>
         <a href="calendar.html">Kalendārs</a>
@@ -19,94 +24,145 @@
       </nav>
     </header>
 
-    <main class="page">
-      <div class="grid2">
-        <section class="card">
-          <h2 id="formTitle">Jauna rezervācija</h2>
+    <main class="bookingLayout">
+      <!-- LEFT: Form -->
+      <section class="card bookingCard">
+        <div class="bookingTop">
+          <div>
+            <h2 style="margin:0;">Rezervācija</h2>
+            <p class="hint" style="margin-top:6px;">Aizpildi soli pa solim. Karte labajā pusē parādīs upes maršrutu.</p>
+          </div>
+          <span class="pill" id="pickedDatePill">—</span>
+        </div>
 
-          <form id="form" class="form">
-            <input type="hidden" id="editId" />
+        <div class="progress">
+          <div class="step active">1</div><div class="line"></div>
+          <div class="step">2</div><div class="line"></div>
+          <div class="step">3</div>
+        </div>
 
-            <div class="two">
-              <div class="field">
-                <label>Vārds</label>
-                <input id="name" placeholder="Vārds Uzvārds" required />
+        <form id="bookingForm" class="form">
+          <!-- 1) Kontakti -->
+          <div class="block">
+            <div class="blockTitle">Kontakti</div>
+
+            <div class="field">
+              <label>Email *</label>
+              <input id="email" type="email" required placeholder="name@example.com" autocomplete="email" />
+            </div>
+
+            <div class="field">
+              <label>Vārds, Uzvārds *</label>
+              <input id="fullName" required placeholder="Vārds Uzvārds" autocomplete="name" />
+            </div>
+
+            <div class="field">
+              <label>Tālrunis *</label>
+              <input id="phone" required placeholder="+371 XXXXXXXX" autocomplete="tel" />
+            </div>
+          </div>
+
+          <!-- 2) Datumi -->
+          <div class="block">
+            <div class="blockTitle">Datums un laiks</div>
+
+            <div class="field">
+              <label>Saņemšana *</label>
+              <input id="pickup" type="datetime-local" required />
+            </div>
+
+            <div class="field">
+              <label>Nodošana *</label>
+              <input id="returnDate" type="date" required />
+            </div>
+          </div>
+
+          <!-- 3) Inventārs + upe -->
+          <div class="block">
+            <div class="blockTitle">Inventārs un upe</div>
+
+            <div class="invGrid">
+              <div class="invItem">
+                <div class="invLabel">VISTA</div>
+                <input id="vista" type="number" min="0" value="0" />
               </div>
-
-              <div class="field">
-                <label>E-pasts</label>
-                <input id="email" placeholder="name@example.com" type="email" required />
+              <div class="invItem">
+                <div class="invLabel">KANOE</div>
+                <input id="kanoe" type="number" min="0" value="0" />
+              </div>
+              <div class="invItem">
+                <div class="invLabel">SUP</div>
+                <input id="sup" type="number" min="0" value="0" />
               </div>
             </div>
 
-            <div class="three">
-              <div class="field">
-                <label>Datums</label>
-                <input id="date" type="date" required />
-              </div>
+            <p class="hint" id="invHint" style="margin-top:10px;">Izvēlies vismaz 1 vienību.</p>
 
-              <div class="field">
-                <label>Laiks</label>
-                <input id="time" type="time" required />
-              </div>
+            <div class="field">
+              <label>Izvēlētā upe *</label>
+              <select id="river" required>
+                <option value="" selected disabled>Izvēlies…</option>
+                <option value="Pededze">Pededze</option>
+                <option value="Aiviekste">Aiviekste</option>
+                <option value="Gauja">Gauja</option>
+                <option value="Other">Cita</option>
+              </select>
+              <div class="hint">Izvēloties upi, maršruts tiks iezīmēts kartē.</div>
+            </div>
 
-              <div class="field">
-                <label>Personas</label>
-                <input id="party" type="number" min="1" value="1" required />
-              </div>
+            <div class="field" id="riverOtherWrap" style="display:none;">
+              <label>Cita upe</label>
+              <input id="riverOther" placeholder="Ieraksti upes nosaukumu" />
             </div>
 
             <div class="field">
               <label>Piezīmes</label>
               <textarea id="notes" rows="3" placeholder="(neobligāti)"></textarea>
             </div>
-
-            <div class="actions">
-              <button class="btn primary" type="submit" id="saveBtn">Saglabāt</button>
-              <button class="btn ghost" type="button" id="cancelEdit" hidden>Atcelt labošanu</button>
-            </div>
-
-            <div class="error" id="error"></div>
-
-            <p class="hint" style="margin-top:10px;">
-              Šis ir “front-end only” prototips (glabājas pārlūkā). Ja gribi īstu sistēmu uz GitHub Pages,
-              varam pieslēgt Supabase/Firebase vai ārēju API.
-            </p>
-          </form>
-        </section>
-
-        <section class="card" id="list">
-          <div class="listHead">
-            <h2>Rezervācijas</h2>
-            <span class="pill" id="count">0</span>
           </div>
 
-          <div class="tableWrap">
-            <table id="tbl">
-              <thead>
-                <tr>
-                  <th>Datums</th>
-                  <th>Laiks</th>
-                  <th>Vārds</th>
-                  <th>E-pasts</th>
-                  <th>Pers.</th>
-                  <th class="right">Darbības</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
+          <div class="actionsSticky">
+            <button class="btn primary" type="submit">Nosūtīt rezervāciju</button>
+            <a class="btn ghost" href="calendar.html">Atpakaļ uz kalendāru</a>
           </div>
-        </section>
-      </div>
+
+          <div class="error" id="error"></div>
+        </form>
+      </section>
+
+      <!-- RIGHT: Map -->
+      <section class="card mapCard">
+        <div class="mapHeader">
+          <div>
+            <div class="mapTitle">Maršruts kartē</div>
+            <div class="hint" id="mapHint">Izvēlies upi, lai iezīmētu maršrutu.</div>
+          </div>
+          <button class="btn ghost" id="resetMapBtn" type="button">Reset</button>
+        </div>
+
+        <div id="bookingMap" class="bookingMap"></div>
+
+        <div class="mapFooter hint">
+          Mapbox token: <code>assets/js/config.js</code> • Maršruti: <code>assets/js/routes.js</code>
+        </div>
+      </section>
     </main>
 
     <footer class="footer">
       <span>© 2026</span>
-      <span class="muted">Rezervācijas (demo)</span>
+      <span class="muted">Rezervācijas</span>
     </footer>
 
   </div>
 
+  <!-- Mapbox JS tikai šeit (booking lapā) -->
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/routes.js"></script>
+
+  <!-- booking + map integrācija -->
   <script src="assets/js/booking.js"></script>
+  <script src="assets/js/booking-map.js"></script>
 </body>
 </html>
