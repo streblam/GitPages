@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rezervēt — Pēddzes Laivas</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <a class="brand" href="./index.html">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1 id="brandName">Pēddzes Laivas</h1>
+          <p id="brandTagline">Rezervācija</p>
+        </div>
+      </a>
+      <div class="navlinks">
+        <a class="pill" href="./index.html">Sākums</a>
+        <a class="pill" href="./booking.html">Rezervēt</a>
+        <a class="pill" href="./admin.html">Admin</a>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="card pad panel" tabindex="0">
+        <h2 style="margin-top:0;">Rezervācija</h2>
+        <p class="muted">Aizpildi formu — mēs apstiprināsim pieejamību un sazināsimies.</p>
+
+        <div class="inlineError" id="formError"></div>
+
+        <form class="form" id="bookingForm">
+          <div class="row2">
+            <div>
+              <label>Sākuma datums</label>
+              <input type="date" id="startDate" required />
+            </div>
+            <div>
+              <label>Dienu skaits</label>
+              <input type="number" id="days" min="1" max="14" value="1" required />
+            </div>
+          </div>
+
+          <div class="row2">
+            <div>
+              <label>Upe / maršruts</label>
+              <select id="river"></select>
+            </div>
+            <div>
+              <label>Statuss</label>
+              <select id="status">
+                <option value="JAUNA">JAUNA</option>
+                <option value="GAIDA APMAKSU">GAIDA APMAKSU</option>
+                <option value="APSTIPRINĀTS">APSTIPRINĀTS</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="row2">
+            <div>
+              <label>VISTA (gab.)</label>
+              <input type="number" id="vista" min="0" value="0" />
+            </div>
+            <div>
+              <label>KANOE (gab.)</label>
+              <input type="number" id="kanoe" min="0" value="0" />
+            </div>
+          </div>
+
+          <div class="row2">
+            <div>
+              <label>SUP (gab.)</label>
+              <input type="number" id="sup" min="0" value="0" />
+            </div>
+            <div>
+              <label>Piezīmes</label>
+              <input type="text" id="notes" placeholder="Piem.: piegāde, bērnu vestes, utt." />
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="row2">
+            <div>
+              <label>Vārds</label>
+              <input type="text" id="name" required />
+            </div>
+            <div>
+              <label>Telefons</label>
+              <input type="tel" id="phone" placeholder="+371..." required />
+            </div>
+          </div>
+
+          <div class="row2">
+            <div>
+              <label>E-pasts</label>
+              <input type="email" id="email" placeholder="ja ir" />
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <button class="btn primary" type="submit">Nosūtīt rezervāciju</button>
+            </div>
+          </div>
+
+          <div class="small" id="noticeText"></div>
+        </form>
+      </div>
+
+      <div class="card pad panel" tabindex="0">
+        <h3 style="margin-top:0;">Pieejamība</h3>
+        <p class="muted">Šis ir aptuvens aprēķins pēc esošajām rezervācijām un kopējā inventāra.</p>
+        <div class="hr"></div>
+        <div id="availabilityBox" class="small">Izvēlies datumus un daudzumu, lai redzētu atlikumu.</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+          <button class="btn" id="exportBtn" type="button">Eksportēt rezervācijas XML</button>
+          <button class="btn" id="clearLocalBtn" type="button" title="Notīra tikai šajā pārlūkā saglabātās jaunās rezervācijas">Notīrīt lokālos</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div><a class="underline" href="./index.html">← Atpakaļ uz sākumu</a></div>
+      <div class="small">Padoms: ja izmanto Live Server, “Eksportēt XML” lejupielādē failu, ko vari aizvietot mapē <code>/data</code>.</div>
+    </div>
+  </div>
+
+  <script type="module" src="./assets/pages/booking.js"></script>
+</body>
+</html>
