@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pēddzes Laivas — noma un rezervācijas</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <a class="brand" href="./index.html">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1 id="brandName">Pēddzes Laivas</h1>
+          <p id="brandTagline">Laivu, kanoe un SUP noma</p>
+        </div>
+      </a>
+
+      <div class="navlinks">
+        <a class="pill" href="#pakalpojumi">Piedāvājums</a>
+        <a class="pill" href="#kaTasStrada">Kā tas strādā</a>
+        <a class="pill" href="./booking.html">Rezervēt</a>
+        <a class="pill" href="./admin.html" title="Administrēšana">Admin</a>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="card pad">
+        <span class="badge" id="noticeBadge">Ātra rezervācija • Atbilde 1 dienas laikā</span>
+        <h2 style="margin-top:12px;">Plāno laivu braucienu? Rezervē tiešsaistē pāris minūtēs.</h2>
+        <p id="noticeText">Rezervācija tiek apstiprināta pēc saziņas (SMS/e-pasts). Maksājums iespējams pēc rēķina.</p>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+          <a class="btn primary" href="./booking.html">Rezervēt tagad</a>
+          <a class="btn" href="#pakalpojumi">Apskatīt inventāru</a>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi">
+            <div class="big">VISTA laivas</div>
+            <div class="small">Stabilas un drošas atpūtai</div>
+          </div>
+          <div class="kpi">
+            <div class="big">Kanoe</div>
+            <div class="small">Ideāli pāriem un ģimenēm</div>
+          </div>
+          <div class="kpi">
+            <div class="big">SUP dēļi</div>
+            <div class="small">Aktīvai dienai uz ūdens</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card pad">
+        <h3 style="margin-top:0;">Kontakti</h3>
+        <p class="muted" style="margin-bottom:10px;">Jautājumi par maršrutu, sākuma punktu vai piegādi? Sazinies — palīdzēsim.</p>
+        <div class="hr"></div>
+        <div class="small">Tālrunis</div>
+        <div style="font-size:16px; margin:6px 0 12px;"><a class="underline" id="phoneLink" href="#">+371 22 151 577</a></div>
+        <div class="small">E-pasts</div>
+        <div style="font-size:16px; margin:6px 0 12px;"><a class="underline" id="emailLink" href="#">pededzeslaivas@gmail.com</a></div>
+        <div class="small">Tipiski: atbilde tajā pašā vai nākamajā dienā.</div>
+      </div>
+    </div>
+
+    <div class="section" id="pakalpojumi">
+      <h3>Piedāvājums</h3>
+      <div class="grid3" id="servicesGrid"></div>
+    </div>
+
+    <div class="section" id="kaTasStrada">
+      <h3>Kā notiek rezervācija</h3>
+      <div class="grid3">
+        <div class="card pad">
+          <div class="badge">1</div>
+          <h3 style="margin-top:10px;">Izvēlies datumus</h3>
+          <p class="muted">Norādi sākumu, dienu skaitu un inventāra daudzumu.</p>
+        </div>
+        <div class="card pad">
+          <div class="badge">2</div>
+          <h3 style="margin-top:10px;">Saņem apstiprinājumu</h3>
+          <p class="muted">Mēs pārbaudām pieejamību un sazināmies par detaļām.</p>
+        </div>
+        <div class="card pad">
+          <div class="badge">3</div>
+          <h3 style="margin-top:10px;">Baudi braucienu</h3>
+          <p class="muted">Saņem inventāru, instrukciju un dodies maršrutā.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>© <span id="year"></span> <span id="brandName2">Pēddzes Laivas</span></div>
+      <div class="small">Šī ir statiska demo versija (Live Server). Ja vajag īstu serveri ar automātisku XML saglabāšanu — var uztaisīt Node.js.</div>
+    </div>
+  </div>
+
+  <script type="module" src="./assets/pages/index.js"></script>
+</body>
+</html>

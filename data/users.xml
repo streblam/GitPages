@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<users version="1.0">
+  <user id="u_admin">
+    <role>admin</role>
+    <name>Administrators</name>
+    <email>admin@example.com</email>
+    <passwordSha256>3eb3fe66b31e3b4d10fa70b5cad49c7112294af6ae4e476a1c405155d45aa121</passwordSha256>
+  </user>
+</users>
